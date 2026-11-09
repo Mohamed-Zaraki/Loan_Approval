@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LoanFlow — Loan Acceptance Rules</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 15mm 18mm;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    color: #0b1220;
+    font-size: 9.7pt;
+    line-height: 1.5;
+  }
+
+  .cover {
+    position: relative;
+    padding: 26px 28px 24px;
+    border-radius: 16px;
+    color: #fff;
+    background:
+      radial-gradient(420px 220px at 100% -20%, rgba(129, 140, 248, 0.55), transparent 62%),
+      radial-gradient(260px 180px at -5% 115%, rgba(6, 182, 212, 0.28), transparent 65%),
+      linear-gradient(150deg, #0b1220, #1b2440 58%, #312e81);
+    margin-bottom: 22px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a5b4fc;
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    display: inline-grid;
+    place-items: center;
+    background: linear-gradient(140deg, #6366f1, #4f46e5 45%, #7c3aed);
+    color: #fff;
+    font-size: 11pt;
+    font-weight: 800;
+  }
+
+  h1 {
+    font-size: 25pt;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 16px 0 8px;
+    font-weight: 800;
+  }
+
+  .cover p {
+    margin: 0;
+    max-width: 62ch;
+    color: #c7d2e5;
+    font-size: 10pt;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .chip {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 8.2pt;
+    font-weight: 600;
+    color: #dbe3f4;
+  }
+
+  .note {
+    padding: 10px 12px;
+    border-left: 3px solid #4f46e5;
+    background: #f4f5ff;
+    border-radius: 0 8px 8px 0;
+    margin: 0 0 18px;
+    color: #33405c;
+  }
+
+  .toc {
+    border: 1px solid #e4e7f2;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: #fbfbfe;
+    break-inside: avoid;
+  }
+
+  .toc h2 {
+    margin: 0 0 6px;
+    border: 0;
+    padding: 0;
+    font-size: 8.5pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b7690;
+  }
+
+  .toc ol {
+    margin: 0;
+    padding-left: 16px;
+    columns: 2;
+    column-gap: 28px;
+    font-size: 9pt;
+    color: #33405c;
+  }
+
+  .toc li { margin: 2px 0; }
+
+  section { margin-bottom: 18px; }
+
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 20px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e6e9f5;
+    font-size: 14pt;
+    letter-spacing: -0.01em;
+    font-weight: 800;
+    color: #141c30;
+    break-after: avoid;
+  }
+
+  h2 .num {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 10pt;
+    font-weight: 800;
+    flex: none;
+  }
+
+  h3 {
+    margin: 12px 0 5px;
+    font-size: 10.5pt;
+    color: #1f2a44;
+    break-after: avoid;
+  }
+
+  p { margin: 0 0 8px; color: #33405c; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    break-inside: avoid;
+    font-size: 8.9pt;
+  }
+
+  th {
+    text-align: left;
+    padding: 6px 8px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #d9ddf0;
+  }
+
+  td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #eceef7;
+    vertical-align: top;
+    color: #29344d;
+  }
+
+  tbody tr:nth-child(even) td { background: #fbfbfe; }
+
+  td strong { color: #111a2e; }
+
+  code {
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    font-size: 8.5pt;
+    background: #f2f4fa;
+    border: 1px solid #e6e9f2;
+    border-radius: 4px;
+    padding: 0 4px;
+    color: #312e81;
+  }
+
+  pre {
+    margin: 6px 0 12px;
+    padding: 10px 12px;
+    background: #0f172a;
+    color: #dbe4ff;
+    border-radius: 9px;
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    font-size: 8.4pt;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    break-inside: avoid;
+  }
+
+  pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  ul {
+    margin: 4px 0 12px;
+    padding-left: 18px;
+    color: #33405c;
+  }
+
+  li { margin: 3px 0; }
+
+  .rules {
+    border: 1px solid #e4e7f2;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    break-inside: avoid;
+  }
+
+  .rules-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #f7f8fd;
+    border-bottom: 1px solid #e4e7f2;
+  }
+
+  .rules-head strong {
+    font-size: 9.5pt;
+    color: #1f2a44;
+  }
+
+  .tag {
+    font-size: 7.6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 99px;
+  }
+
+  .tag.required { color: #b42318; background: #fef3f2; border: 1px solid #fee4e2; }
+  .tag.advisory { color: #b54708; background: #fffaeb; border: 1px solid #fef0c7; }
+  .tag.info     { color: #4338ca; background: #eef2ff; border: 1px solid #d9ddf0; }
+
+  .foot {
+    margin-top: 22px;
+    padding-top: 10px;
+    border-top: 1px solid #e4e7f2;
+    font-size: 8pt;
+    color: #6b7690;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .keep { break-inside: avoid; }
+
+  .muted { color: #6b7690; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand"><span class="brand-mark">↗</span> LoanFlow · Lending policy</div>
+  <h1>Loan acceptance rules</h1>
+  <p>
+    The complete rule set applied by the frontend: required eligibility checks, advisory
+    signals, scoring, financial calculations, intake validation, document constraints and
+    manager decision rules.
+  </p>
+  <div class="cover-meta">
+    <span class="chip">Decision support only</span>
+    <span class="chip">Manual manager approval</span>
+    <span class="chip">Currency: EUR (€)</span>
+    <span class="chip">Updated 7 November 2026</span>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Important:</strong> the system never approves a loan automatically. It scores each
+  application and shows a recommendation; a bank manager records the final approve or deny
+  decision, with a documented reason.
+</div>
+
+<div class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li>Required eligibility checks</li>
+    <li>Advisory checks</li>
+    <li>Score and recommendation</li>
+    <li>Financial calculations</li>
+    <li>Application intake validation</li>
+    <li>Proof-of-income document rules</li>
+    <li>Manager decision rules</li>
+    <li>Policy constants</li>
+  </ol>
+</div>
+
+<section>
+  <h2><span class="num">1</span> Required eligibility checks</h2>
+  <p>These are hard rules. If any of them fails, the recommendation becomes <strong>High risk</strong>
+  and the UI advises denial “unless compensating factors apply”.</p>
+
+  <div class="rules">
+    <div class="rules-head"><strong>Core credit criteria</strong><span class="tag required">Required</span></div>
+    <table>
+      <thead><tr><th style="width:4%">#</th><th style="width:24%">Rule</th><th>Condition to pass</th><th style="width:22%">Source</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><strong>Age within policy range</strong></td><td><code>18 ≤ age ≤ 70</code></td><td><code>POLICY.minAge</code> / <code>maxAge</code></td></tr>
+        <tr><td>2</td><td><strong>Income verified</strong></td><td>A proof-of-income document is attached</td><td><code>incomeVerified</code></td></tr>
+        <tr><td>3</td><td><strong>Debt-to-income within limit</strong></td><td><code>(existing debt + new installment) ÷ monthly income ≤ 40%</code></td><td><code>POLICY.maxDebtRatio</code></td></tr>
+        <tr><td>4</td><td><strong>Repayment history</strong></td><td>At most <strong>2</strong> missed payments in the last 12 months</td><td><code>POLICY.maxMissedPayments</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="muted">Debt-to-income also fails when monthly income is zero (treated as 100%).</p>
+</section>
+
+<section>
+  <h2><span class="num">2</span> Advisory checks</h2>
+  <p>Advisory rules do not block an application on their own. If all required checks pass but
+  one or more advisory checks fail, the recommendation becomes <strong>Manual review advised</strong>.</p>
+
+  <div class="rules">
+    <div class="rules-head"><strong>Supporting signals</strong><span class="tag advisory">Advisory</span></div>
+    <table>
+      <thead><tr><th style="width:4%">#</th><th style="width:24%">Rule</th><th>Condition to pass</th><th style="width:24%">Source</th></tr></thead>
+      <tbody>
+        <tr><td>5</td><td><strong>Stable employment</strong></td><td>Applicant holds a permanent contract (CDI)</td><td><code>applicant.hasCDI</code></td></tr>
+        <tr><td>6</td><td><strong>Savings buffer</strong></td><td>Savings ≥ one monthly installment</td><td><code>assessment.monthlyPayment</code></td></tr>
+        <tr><td>7</td><td><strong>Loan-to-income guide</strong></td><td><code>loan amount ÷ monthly income ≤ 36×</code></td><td><code>POLICY.maxLoanToIncome</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">3</span> Score and recommendation</h2>
+  <pre><code>requiredFailures = number of failed required checks (rules 1–4)
+advisoryFailures = number of failed advisory checks (rules 5–7)
+
+score = max(0, 100 − requiredFailures × 28 − advisoryFailures × 7)
+
+if requiredFailures &gt; 0        →  "high-risk"  (High risk)
+else if advisoryFailures &gt; 0   →  "review"     (Manual review advised)
+else                           →  "strong"     (Strong profile)</code></pre>
+
+  <table class="keep">
+    <thead><tr><th>Required failed</th><th>Advisory failed</th><th>Score</th><th>Recommendation</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>0</td><td>100</td><td>Strong profile</td></tr>
+      <tr><td>0</td><td>1</td><td>93</td><td>Manual review advised</td></tr>
+      <tr><td>0</td><td>2</td><td>86</td><td>Manual review advised</td></tr>
+      <tr><td>1</td><td>0</td><td>72</td><td>High risk</td></tr>
+      <tr><td>1</td><td>1</td><td>65</td><td>High risk</td></tr>
+      <tr><td>2</td><td>0</td><td>44</td><td>High risk</td></tr>
+      <tr><td>4</td><td>3</td><td>0</td><td>High risk (floor)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">4</span> Financial calculations</h2>
+  <ul>
+    <li>Annual interest rate: <strong>6.5%</strong>; monthly rate = <code>annual rate ÷ 12</code>.</li>
+    <li>Monthly installment (annuity formula):</li>
+  </ul>
+  <pre><code>payment = principal × r ÷ (1 − (1 + r)^−months)
+
+r = annualRate ÷ 12</code></pre>
+  <ul>
+    <li>Falls back to <code>principal ÷ months</code> when the rate is 0.</li>
+    <li>Total repayment = <code>monthly payment × duration</code>.</li>
+    <li>Total interest = <code>max(total repayment − loan amount, 0)</code>.</li>
+    <li>Debt-to-income = <code>(existing debt + monthly installment) ÷ monthly income</code>.</li>
+    <li>Residual income = <code>monthly income − existing debt − monthly installment</code>.</li>
+    <li>Loan-to-income = <code>loan amount ÷ monthly income</code>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">5</span> Application intake validation</h2>
+  <p>These checks prevent an invalid file from being created. They are not credit rules.</p>
+
+  <table>
+    <thead><tr><th style="width:30%">Field</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>Full name</td><td>At least 3 characters</td></tr>
+      <tr><td>National ID (CNIB)</td><td>Exactly <strong>18 digits</strong>, not all zeros</td></tr>
+      <tr><td>Age</td><td>18–75 at form level (<code>maxValidationAge</code>); approval only accepts ≤ 70</td></tr>
+      <tr><td>Occupation</td><td>Required</td></tr>
+      <tr><td>Children</td><td>Integer, 0–20</td></tr>
+      <tr><td>Monthly income</td><td>Greater than 0</td></tr>
+      <tr><td>Existing monthly debt</td><td>Required, ≥ 0</td></tr>
+      <tr><td>Savings</td><td>Required, ≥ 0</td></tr>
+      <tr><td>Proof of income</td><td>Required</td></tr>
+      <tr><td>Loan amount</td><td>€500 – €1,000,000</td></tr>
+      <tr><td>Loan duration</td><td>6–360 months (dropdown: 12, 24, 36, 48, 60, 84, 120, 180, 240)</td></tr>
+      <tr><td>Loan purpose</td><td>Must be selected</td></tr>
+      <tr><td>Missed payments</td><td>Integer, 0–50</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">6</span> Proof-of-income document rules</h2>
+  <table>
+    <thead><tr><th style="width:34%">Rule</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Accepted formats</td><td><strong>PDF, JPG, PNG</strong></td></tr>
+      <tr><td>Maximum upload size</td><td><strong>3 MB</strong></td></tr>
+      <tr><td>PDF cap (browser demo)</td><td><strong>1.5 MB</strong> — PDFs are stored inline</td></tr>
+      <tr><td>Image handling</td><td>Longest edge downscaled to <strong>1600 px</strong>; re-encoded as JPEG at 0.75 quality</td></tr>
+      <tr><td>Requirement</td><td>Mandatory; <code>incomeVerified</code> is derived from its presence</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Accepted supporting documents</h3>
+  <ul>
+    <li><strong>Employees (CDI):</strong> last 3 payslips, an <em>attestation de salaire</em>, or a CNAS statement.</li>
+    <li><strong>Self-employed:</strong> CASNOS certificate + latest <em>avis d'imposition</em>.</li>
+    <li><strong>Retirees:</strong> <em>attestation de retraite</em>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">7</span> Manager decision rules</h2>
+  <table>
+    <thead><tr><th style="width:34%">Rule</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Eligible applications</td><td>Only applications with status <strong>pending</strong> can be decided</td></tr>
+      <tr><td>Outcomes</td><td><strong>approved</strong> or <strong>denied</strong></td></tr>
+      <tr><td>Denial reason</td><td>Required, at least <strong>8 characters</strong></td></tr>
+      <tr><td>Approval reason</td><td>Optional; default: “The application meets the bank’s eligibility criteria.”</td></tr>
+      <tr><td>Decision record</td><td>Decision ID, status, reason, manager name and timestamp</td></tr>
+      <tr><td>Manager override</td><td>The score and recommendation are shown but do not block either decision</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">8</span> Policy constants</h2>
+  <table>
+    <thead><tr><th style="width:50%">Constant</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Minimum age (approval)</td><td>18</td></tr>
+      <tr><td>Maximum age (approval)</td><td>70</td></tr>
+      <tr><td>Maximum age (form validation)</td><td>75</td></tr>
+      <tr><td>Maximum debt-to-income</td><td>40%</td></tr>
+      <tr><td>Maximum missed payments</td><td>2</td></tr>
+      <tr><td>Maximum loan-to-income</td><td>36×</td></tr>
+      <tr><td>Minimum loan amount</td><td>€500</td></tr>
+      <tr><td>Maximum loan amount</td><td>€1,000,000</td></tr>
+      <tr><td>Minimum duration</td><td>6 months</td></tr>
+      <tr><td>Maximum duration</td><td>360 months</td></tr>
+      <tr><td>Annual interest rate</td><td>6.5%</td></tr>
+      <tr><td>Currency</td><td>EUR (€)</td></tr>
+    </tbody>
+  </table>
+
+  <p class="muted">All thresholds live in <code>src/config.ts</code>. The assessment logic is in
+  <code>src/utils/loan.ts</code>. Form validation is in <code>src/pages/ClientPage.tsx</code>.</p>
+</section>
+
+<div class="foot">
+  <span><strong>LoanFlow</strong> — front-end loan origination prototype</span>
+  <span>Rule set · 7 November 2026</span>
+</div>
+
+</body>
+</html>

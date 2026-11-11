@@ -28,6 +28,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE `bank_managers` (
     `manager_id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(150) NOT NULL,
+    `email` VARCHAR(254) NULL UNIQUE,
+    `password_hash` VARCHAR(255) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -74,6 +76,11 @@ CREATE TABLE `loan_applications` (
     `total_debt` DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
     `savings` DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
     `income_verified` BOOLEAN NOT NULL DEFAULT FALSE,
+    `income_document_name` VARCHAR(255) NULL,
+    `income_document_type` VARCHAR(100) NULL,
+    `income_document_size` INT NULL,
+    `income_document_uploaded_at` DATETIME NULL,
+    `income_document_data_url` LONGTEXT NULL,
     `loan_amount` DECIMAL(12, 2) NOT NULL,
     `loan_duration` INT NOT NULL COMMENT 'Duration in months',
     `loan_purpose` VARCHAR(255) NULL,

@@ -1,0 +1,1755 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LoanFlow — Loan approval dataset description</title>
+<style>
+  @page {
+    size: A4;
+    margin: 15mm 14mm 16mm;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    color: #0b1220;
+    font-size: 9.6pt;
+    line-height: 1.5;
+  }
+
+  .cover {
+    position: relative;
+    padding: 26px 28px 24px;
+    border-radius: 16px;
+    color: #fff;
+    background:
+      radial-gradient(420px 220px at 100% -20%, rgba(129, 140, 248, 0.55), transparent 62%),
+      radial-gradient(260px 180px at -5% 115%, rgba(6, 182, 212, 0.28), transparent 65%),
+      linear-gradient(150deg, #0b1220, #1b2440 58%, #312e81);
+    margin-bottom: 16px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a5b4fc;
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    display: inline-grid;
+    place-items: center;
+    background: linear-gradient(140deg, #6366f1, #4f46e5 45%, #7c3aed);
+    color: #fff;
+    font-size: 11pt;
+    font-weight: 800;
+  }
+
+  h1 {
+    font-size: 24pt;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 14px 0 8px;
+    font-weight: 800;
+  }
+
+  .cover p {
+    margin: 0;
+    max-width: 64ch;
+    color: #c7d2e5;
+    font-size: 10pt;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .chip {
+    display: inline-block;
+    padding: 4px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 8pt;
+    font-weight: 600;
+    color: #dbe3f4;
+  }
+
+  .note {
+    padding: 10px 12px;
+    border-left: 3px solid #4f46e5;
+    background: #f4f5ff;
+    border-radius: 0 8px 8px 0;
+    margin: 0 0 14px;
+    color: #33405c;
+    font-size: 9.2pt;
+  }
+
+  .toc {
+    border: 1px solid #e4e7f2;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    background: #fbfbfe;
+    break-inside: avoid;
+  }
+
+  .toc h2 {
+    margin: 0 0 6px;
+    border: 0;
+    padding: 0;
+    font-size: 8.4pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b7690;
+  }
+
+  .toc > ul {
+    margin: 0;
+    padding-left: 16px;
+    columns: 2;
+    column-gap: 28px;
+    font-size: 8.8pt;
+    color: #33405c;
+  }
+
+  .toc ul { margin: 2px 0; padding-left: 14px; }
+  .toc li { margin: 2px 0; break-inside: avoid; }
+  .toc a { color: #33405c; text-decoration: none; }
+
+  .doc > h1:first-child { display: none; }
+
+  .doc > table:first-child { margin-top: 0; }
+
+  h2 {
+    margin: 20px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e6e9f5;
+    font-size: 13.5pt;
+    letter-spacing: -0.01em;
+    font-weight: 800;
+    color: #141c30;
+    break-after: avoid;
+  }
+
+  h3 {
+    margin: 13px 0 5px;
+    font-size: 10.4pt;
+    color: #1f2a44;
+    break-after: avoid;
+  }
+
+  p { margin: 0 0 8px; color: #33405c; }
+
+  strong { color: #111a2e; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    font-size: 8.6pt;
+    break-inside: avoid;
+  }
+
+  thead { display: table-header-group; }
+
+  tr { break-inside: avoid; }
+
+  h2#appendix-a--full-application-register ~ table { break-inside: auto; }
+
+  h2#appendix-a--full-application-register { break-before: auto; }
+
+  h2[id^="1-purpose"] { break-before: page; }
+
+  th {
+    text-align: left;
+    padding: 5px 7px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 7.8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #d9ddf0;
+  }
+
+  td {
+    padding: 5px 7px;
+    border-bottom: 1px solid #eceef7;
+    vertical-align: top;
+    color: #29344d;
+  }
+
+  tbody tr:nth-child(even) td { background: #fbfbfe; }
+
+  code {
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    font-size: 8.3pt;
+    background: #f2f4fa;
+    border: 1px solid #e6e9f2;
+    border-radius: 4px;
+    padding: 0 3px;
+    color: #312e81;
+  }
+
+  pre {
+    margin: 6px 0 12px;
+    padding: 10px 12px;
+    background: #0f172a;
+    color: #dbe4ff;
+    border-radius: 9px;
+    font-family: 'Cascadia Mono', Consolas, monospace;
+    font-size: 8pt;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    break-inside: avoid;
+  }
+
+  pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  ul, ol { margin: 4px 0 10px; padding-left: 18px; color: #33405c; }
+  li { margin: 3px 0; }
+
+  a { color: #3730a3; text-decoration: none; }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #e6e9f5;
+    margin: 18px 0;
+  }
+
+  h3, h2 { page-break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand"><span class="brand-mark">↗</span> LoanFlow · Data &amp; analytics</div>
+  <h1>Loan approval dataset</h1>
+  <p>
+    Data description of the fictional <code style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);color:#e0e7ff">loan_approval_db</code>
+    MySQL database: schema, data dictionary, distributions, derived risk profile, data-quality
+    notes and intended use for the 30-record sample.
+  </p>
+  <div class="cover-meta">
+    <span class="chip">MySQL 8.0+</span>
+    <span class="chip">4 tables · 62 rows</span>
+    <span class="chip">30 applications</span>
+    <span class="chip">Synthetic test data</span>
+    <span class="chip">Version 1.0 · 11 Nov 2026</span>
+  </div>
+</div>
+
+<div class="note">
+  <strong>Synthetic data.</strong> Every identity and financial value is invented. The dataset is
+  suitable for UI development, API contract tests, SQL exercises and demonstrations. It is not a
+  representative sample of a real loan book and must not be used for credit scoring, model
+  training or regulatory reporting.
+</div>
+
+<div class="toc">
+  <h2>Contents</h2>
+  <ul>
+  <li><a href="#dataset-summary">Dataset summary</a></li>
+  <li><a href="#1-purpose-of-the-dataset">1. Purpose of the dataset</a></li>
+  <li><a href="#2-provenance-and-generation-method">2. Provenance and generation method</a></li>
+  <li><a href="#3-dataset-at-a-glance">3. Dataset at a glance</a></li>
+  <li><a href="#4-schema-overview">4. Schema overview</a></li>
+  <li><a href="#5-data-dictionary">5. Data dictionary</a></li>
+  <li><a href="#6-data-profile">6. Data profile</a></li>
+  <li><a href="#7-sample-records">7. Sample records</a></li>
+  <li><a href="#8-data-quality-notes">8. Data quality notes</a></li>
+  <li><a href="#9-intended-use-and-limitations">9. Intended use and limitations</a></li>
+  <li><a href="#10-loading-and-verification">10. Loading and verification</a></li>
+  <li><a href="#11-traceability">11. Traceability</a></li>
+  <li><a href="#appendix-a--full-application-register">Appendix A — Full application register</a></li>
+  </ul>
+</div>
+
+<div class="doc">
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Database</td>
+<td><code>loan_approval_db</code></td>
+</tr>
+<tr class="even">
+<td>DBMS</td>
+<td>MySQL 8.0+ (InnoDB, <code>utf8mb4</code> / <code>utf8mb4_unicode_ci</code>)</td>
+</tr>
+<tr class="odd">
+<td>DDL</td>
+<td><a href="../sql/schema.sql"><code>sql/schema.sql</code></a></td>
+</tr>
+<tr class="even">
+<td>Seed data</td>
+<td><a href="../sql/seed.sql"><code>sql/seed.sql</code></a></td>
+</tr>
+<tr class="odd">
+<td>Companion model</td>
+<td><a href="../UML_Model_Loan_Approval.drawio"><code>UML_Model_Loan_Approval.drawio</code></a></td>
+</tr>
+<tr class="even">
+<td>Status</td>
+<td>Synthetic test dataset — not production data</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dataset-summary">Dataset summary</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tables</td>
+<td>4 (<code>bank_managers</code>, <code>applicants</code>, <code>loan_applications</code>, <code>loan_decisions</code>)</td>
+</tr>
+<tr class="even">
+<td>Rows</td>
+<td>62 (2 managers, 30 applicants, 30 applications, 30 decisions)</td>
+</tr>
+<tr class="odd">
+<td>Coverage</td>
+<td>30 applicants, one application and one decision each</td>
+</tr>
+<tr class="even">
+<td>Currency</td>
+<td>EUR (€) — implied by the application, no currency column</td>
+</tr>
+<tr class="odd">
+<td>Time span</td>
+<td>All rows are stamped at load time; no historical dates are seeded</td>
+</tr>
+<tr class="even">
+<td>Personal data</td>
+<td>None. All identities, jobs and financial values are fictional</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-purpose-of-the-dataset">1. Purpose of the dataset</h2>
+<p>The dataset supports the LoanFlow frontend and its future Python/MySQL backend. It exists to:</p>
+<ol type="1">
+<li><strong>Exercise the manager console</strong> — populate the review queue, KPI counters, search, status filters and sorting with a realistic spread of files.</li>
+<li><strong>Exercise the client tracking view</strong> — provide approved, rejected and pending cases so every status and timeline state can be rendered.</li>
+<li><strong>Validate the eligibility engine</strong> — the financial values reproduce the documented policy checks in <a href="LOAN_RULES.md"><code>docs/LOAN_RULES.md</code></a>: age, verified income, debt-to-income, missed payments, CDI, savings buffer and loan-to-income.</li>
+<li><strong>Test the REST contract</strong> — give the API implementation in <a href="API_CONTRACT.md"><code>docs/API_CONTRACT.md</code></a> a stable fixture for list, detail and decision endpoints.</li>
+<li><strong>Support demonstrations and reporting</strong> — provide aggregate figures (approval rate, requested volume, risk distribution) that can be quoted in a report or presentation.</li>
+</ol>
+<p>It is <strong>not</strong> a training set, a credit-scoring validation set, or a representative sample of a real loan book. See <a href="#9-intended-use-and-limitations">§9</a>.</p>
+<hr />
+<h2 id="2-provenance-and-generation-method">2. Provenance and generation method</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Origin</td>
+<td>Hand-authored seed script, committed with the project</td>
+</tr>
+<tr class="even">
+<td>Source commit</td>
+<td><code>bc5313e</code> — “Adding a fictionalDB (30 examples) for Testing purposes”</td>
+</tr>
+<tr class="odd">
+<td>Derived from</td>
+<td>The UML class diagram <code>UML_Model_Loan_Approval.drawio</code></td>
+</tr>
+<tr class="even">
+<td>Generation</td>
+<td>Deterministic <code>INSERT</code> statements; no random generator, no external data source</td>
+</tr>
+<tr class="odd">
+<td>Realism</td>
+<td>Names, occupations, incomes and loan purposes are plausible but invented</td>
+</tr>
+<tr class="even">
+<td>Re-identification risk</td>
+<td>None; no real person, address, phone number or account is present</td>
+</tr>
+<tr class="odd">
+<td>Reproducibility</td>
+<td>Re-running <code>schema.sql</code> then <code>seed.sql</code> always produces the same 62 rows</td>
+</tr>
+</tbody>
+</table>
+<p>The schema drops and recreates the four tables, then <code>seed.sql</code> re-inserts the same fixed values. There are no sequences, random functions or <code>NOW()</code>-relative values in the seed, so the <strong>content</strong> is reproducible; only the automatically generated timestamps differ between runs.</p>
+<hr />
+<h2 id="3-dataset-at-a-glance">3. Dataset at a glance</h2>
+<h3 id="31-row-counts">3.1 Row counts</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Table</th>
+<th style="text-align: right;">Rows</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>bank_managers</code></td>
+<td style="text-align: right;">2</td>
+<td>Reviewers and decision authors</td>
+</tr>
+<tr class="even">
+<td><code>applicants</code></td>
+<td style="text-align: right;">30</td>
+<td>Loan applicants and their profile</td>
+</tr>
+<tr class="odd">
+<td><code>loan_applications</code></td>
+<td style="text-align: right;">30</td>
+<td>Requested loan and financial situation</td>
+</tr>
+<tr class="even">
+<td><code>loan_decisions</code></td>
+<td style="text-align: right;">30</td>
+<td>Outcome of each application</td>
+</tr>
+<tr class="odd">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>62</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-decision-outcome">3.2 Decision outcome</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Rows</th>
+<th style="text-align: right;">Share</th>
+<th style="text-align: right;">Requested amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>APPROVED</code></td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">76.7%</td>
+<td style="text-align: right;">€640,000</td>
+</tr>
+<tr class="even">
+<td><code>REJECTED</code></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">20.0%</td>
+<td style="text-align: right;">€59,000</td>
+</tr>
+<tr class="odd">
+<td><code>PENDING</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3.3%</td>
+<td style="text-align: right;">€14,000</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>30</strong></td>
+<td style="text-align: right;"><strong>100%</strong></td>
+<td style="text-align: right;"><strong>€713,000</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-key-numeric-ranges">3.3 Key numeric ranges</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Measure</th>
+<th style="text-align: right;">Minimum</th>
+<th style="text-align: right;">Maximum</th>
+<th style="text-align: right;">Average</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Applicant age</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">36.3</td>
+</tr>
+<tr class="even">
+<td>Monthly income</td>
+<td style="text-align: right;">€1,300</td>
+<td style="text-align: right;">€6,500</td>
+<td style="text-align: right;">€3,900</td>
+</tr>
+<tr class="odd">
+<td>Existing monthly debt</td>
+<td style="text-align: right;">€100</td>
+<td style="text-align: right;">€950</td>
+<td style="text-align: right;">€426.67</td>
+</tr>
+<tr class="even">
+<td>Savings</td>
+<td style="text-align: right;">€300</td>
+<td style="text-align: right;">€45,000</td>
+<td style="text-align: right;">€14,223.33</td>
+</tr>
+<tr class="odd">
+<td>Loan amount</td>
+<td style="text-align: right;">€6,000</td>
+<td style="text-align: right;">€60,000</td>
+<td style="text-align: right;">€23,766.67</td>
+</tr>
+<tr class="even">
+<td>Duration</td>
+<td style="text-align: right;">12 months</td>
+<td style="text-align: right;">60 months</td>
+<td style="text-align: right;">35.8 months</td>
+</tr>
+<tr class="odd">
+<td>Estimated installment (6.5% APR)</td>
+<td style="text-align: right;">€311.82</td>
+<td style="text-align: right;">€1,185.75</td>
+<td style="text-align: right;">€694.17</td>
+</tr>
+<tr class="even">
+<td>Debt-to-income including installment</td>
+<td style="text-align: right;">19.98%</td>
+<td style="text-align: right;">70.14%</td>
+<td style="text-align: right;">31.68%</td>
+</tr>
+</tbody>
+</table>
+<p>Averages are simple arithmetic means over the 30 rows.</p>
+<h3 id="34-classification-designed-into-the-data">3.4 Classification designed into the data</h3>
+<p>The 30 files are deliberately split into two clearly separable profiles:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Profile</th>
+<th style="text-align: right;">Count</th>
+<th>Characteristics</th>
+<th>Recorded outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Strong</td>
+<td style="text-align: right;">24</td>
+<td>CDI, verified income, DTI ≤ 40%, ≤ 2 missed payments, savings ≥ one installment, loan ≤ 36× income</td>
+<td>23 approved, 1 pending</td>
+</tr>
+<tr class="even">
+<td>High risk</td>
+<td style="text-align: right;">6</td>
+<td>Unverified income <strong>and</strong> DTI &gt; 40% (4 also fail the missed-payment or savings checks)</td>
+<td>6 rejected</td>
+</tr>
+</tbody>
+</table>
+<p>There is no “manual review” (advisory-only failure) case in the seed, and no manager override (approved despite a failed hard rule). The dataset therefore tests the two extremes of the recommendation engine but not its middle band. This is documented again in <a href="#8-data-quality-notes">§8</a>.</p>
+<hr />
+<h2 id="4-schema-overview">4. Schema overview</h2>
+<h3 id="41-entityrelationship-view">4.1 Entity–relationship view</h3>
+<pre class="text"><code>applicants (30)
+   │ 1
+   │ submits
+   ▼ 0..*
+loan_applications (30) ──── 0..1 ──── loan_decisions (30)
+   ▲ 0..*                                   ▲ 0..*
+   │ reviews (reviewed_by_manager_id)       │ decides (decided_by_manager_id)
+   │ 1                                      │ 1
+bank_managers (2) ──────────────────────────┘</code></pre>
+<h3 id="42-relationship-rules">4.2 Relationship rules</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Relationship</th>
+<th>Cardinality</th>
+<th>Foreign key</th>
+<th>On delete</th>
+<th>On update</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Applicant submits applications</td>
+<td>1 → 0..*</td>
+<td><code>loan_applications.applicant_id</code></td>
+<td><code>CASCADE</code></td>
+<td><code>CASCADE</code></td>
+</tr>
+<tr class="even">
+<td>Manager reviews applications</td>
+<td>1 → 0..*</td>
+<td><code>loan_applications.reviewed_by_manager_id</code> (nullable)</td>
+<td><code>SET NULL</code></td>
+<td><code>CASCADE</code></td>
+</tr>
+<tr class="odd">
+<td>Application receives a decision</td>
+<td>1 → 0..1</td>
+<td><code>loan_decisions.application_id</code> (<strong>UNIQUE</strong>)</td>
+<td><code>CASCADE</code></td>
+<td><code>CASCADE</code></td>
+</tr>
+<tr class="even">
+<td>Manager authors a decision</td>
+<td>1 → 0..*</td>
+<td><code>loan_decisions.decided_by_manager_id</code> (nullable)</td>
+<td><code>SET NULL</code></td>
+<td><code>CASCADE</code></td>
+</tr>
+</tbody>
+</table>
+<p>The schema permits an applicant to submit many applications and an application to exist without a decision. The seed is simpler: <strong>exactly one application per applicant and exactly one decision per application</strong>. The 1:N and 0..1 paths are supported but not represented in the data.</p>
+<h3 id="43-indexes">4.3 Indexes</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Index</th>
+<th>Table</th>
+<th>Column(s)</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>PRIMARY</code></td>
+<td>all tables</td>
+<td>surrogate <code>*_id</code></td>
+<td>Row identity</td>
+</tr>
+<tr class="even">
+<td><code>id_card_number</code> UNIQUE</td>
+<td><code>applicants</code></td>
+<td><code>id_card_number</code></td>
+<td>One applicant per national ID</td>
+</tr>
+<tr class="odd">
+<td><code>application_id</code> unique</td>
+<td><code>loan_decisions</code></td>
+<td><code>application_id</code></td>
+<td>Enforces the 1 → 0..1 relationship</td>
+</tr>
+<tr class="even">
+<td><code>idx_loan_apps_applicant</code></td>
+<td><code>loan_applications</code></td>
+<td><code>applicant_id</code></td>
+<td>Applicant lookup and joins</td>
+</tr>
+<tr class="odd">
+<td><code>idx_loan_apps_created_at</code></td>
+<td><code>loan_applications</code></td>
+<td><code>created_at</code></td>
+<td>Queue ordering by date</td>
+</tr>
+<tr class="even">
+<td><code>idx_loan_decisions_status</code></td>
+<td><code>loan_decisions</code></td>
+<td><code>status</code></td>
+<td>Status filters and KPI counts</td>
+</tr>
+</tbody>
+</table>
+<p>MySQL also creates implicit indexes for the <code>reviewed_by_manager_id</code> and <code>decided_by_manager_id</code> foreign keys.</p>
+<hr />
+<h2 id="5-data-dictionary">5. Data dictionary</h2>
+<h3 id="51-bank_managers--2-rows">5.1 <code>bank_managers</code> — 2 rows</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Type</th>
+<th>Null</th>
+<th>Default</th>
+<th>Key / constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>manager_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>auto-increment</td>
+<td>PK</td>
+<td>Surrogate manager identifier</td>
+</tr>
+<tr class="even">
+<td><code>name</code></td>
+<td><code>VARCHAR(150)</code></td>
+<td>no</td>
+<td>—</td>
+<td>—</td>
+<td>Display name used in the console and on decisions</td>
+</tr>
+<tr class="odd">
+<td><code>created_at</code></td>
+<td><code>TIMESTAMP</code></td>
+<td>no</td>
+<td><code>CURRENT_TIMESTAMP</code></td>
+<td>—</td>
+<td>Row creation time</td>
+</tr>
+</tbody>
+</table>
+<p>Seeded values: <code>manager_id = 1</code> — Sarah Connor; <code>manager_id = 2</code> — Alexandre Martin.</p>
+<h3 id="52-applicants--30-rows">5.2 <code>applicants</code> — 30 rows</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Type</th>
+<th>Null</th>
+<th>Default</th>
+<th>Key / constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>applicant_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>auto-increment</td>
+<td>PK</td>
+<td>Surrogate applicant identifier</td>
+</tr>
+<tr class="even">
+<td><code>full_name</code></td>
+<td><code>VARCHAR(150)</code></td>
+<td>no</td>
+<td>—</td>
+<td>—</td>
+<td>Applicant display name</td>
+</tr>
+<tr class="odd">
+<td><code>id_card_number</code></td>
+<td><code>VARCHAR(50)</code></td>
+<td>no</td>
+<td>—</td>
+<td>UNIQUE</td>
+<td>National identity number (CNIB in the app)</td>
+</tr>
+<tr class="even">
+<td><code>age</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>—</td>
+<td><code>CHECK (age &gt;= 18)</code></td>
+<td>Age in years at the time of the file</td>
+</tr>
+<tr class="odd">
+<td><code>job</code></td>
+<td><code>VARCHAR(100)</code></td>
+<td>yes</td>
+<td><code>NULL</code></td>
+<td>—</td>
+<td>Occupation</td>
+</tr>
+<tr class="even">
+<td><code>has_cdi</code></td>
+<td><code>BOOLEAN</code></td>
+<td>no</td>
+<td><code>FALSE</code></td>
+<td>—</td>
+<td>Permanent employment contract (CDI)</td>
+</tr>
+<tr class="odd">
+<td><code>is_married</code></td>
+<td><code>BOOLEAN</code></td>
+<td>no</td>
+<td><code>FALSE</code></td>
+<td>—</td>
+<td>Marital status</td>
+</tr>
+<tr class="even">
+<td><code>number_of_children</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td><code>0</code></td>
+<td><code>CHECK (number_of_children &gt;= 0)</code></td>
+<td>Dependent children</td>
+</tr>
+<tr class="odd">
+<td><code>created_at</code></td>
+<td><code>TIMESTAMP</code></td>
+<td>no</td>
+<td><code>CURRENT_TIMESTAMP</code></td>
+<td>—</td>
+<td>Row creation time</td>
+</tr>
+<tr class="even">
+<td><code>updated_at</code></td>
+<td><code>TIMESTAMP</code></td>
+<td>no</td>
+<td><code>CURRENT_TIMESTAMP ON UPDATE</code></td>
+<td>—</td>
+<td>Last modification time</td>
+</tr>
+</tbody>
+</table>
+<p>Semantics: <code>has_cdi = TRUE</code> means a permanent contract and drives the <em>stable employment</em> advisory check. <code>is_married</code> and <code>number_of_children</code> are descriptive only — they are not used by the eligibility engine.</p>
+<h3 id="53-loan_applications--30-rows">5.3 <code>loan_applications</code> — 30 rows</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Type</th>
+<th>Null</th>
+<th>Default</th>
+<th>Key / constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>application_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>auto-increment</td>
+<td>PK</td>
+<td>Surrogate application identifier</td>
+</tr>
+<tr class="even">
+<td><code>applicant_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>—</td>
+<td>FK → <code>applicants</code></td>
+<td>Applicant who submitted the request</td>
+</tr>
+<tr class="odd">
+<td><code>monthly_income</code></td>
+<td><code>DECIMAL(12,2)</code></td>
+<td>no</td>
+<td>—</td>
+<td><code>CHECK (&gt;= 0)</code></td>
+<td>Net monthly income in EUR</td>
+</tr>
+<tr class="even">
+<td><code>total_debt</code></td>
+<td><code>DECIMAL(12,2)</code></td>
+<td>no</td>
+<td><code>0.00</code></td>
+<td><code>CHECK (&gt;= 0)</code></td>
+<td>Existing monthly debt repayments in EUR</td>
+</tr>
+<tr class="odd">
+<td><code>savings</code></td>
+<td><code>DECIMAL(12,2)</code></td>
+<td>no</td>
+<td><code>0.00</code></td>
+<td><code>CHECK (&gt;= 0)</code></td>
+<td>Available savings in EUR</td>
+</tr>
+<tr class="even">
+<td><code>income_verified</code></td>
+<td><code>BOOLEAN</code></td>
+<td>no</td>
+<td><code>FALSE</code></td>
+<td>—</td>
+<td>Proof of income has been supplied/validated</td>
+</tr>
+<tr class="odd">
+<td><code>loan_amount</code></td>
+<td><code>DECIMAL(12,2)</code></td>
+<td>no</td>
+<td>—</td>
+<td><code>CHECK (&gt; 0)</code></td>
+<td>Requested principal in EUR</td>
+</tr>
+<tr class="even">
+<td><code>loan_duration</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>—</td>
+<td><code>CHECK (&gt; 0)</code></td>
+<td>Duration in months</td>
+</tr>
+<tr class="odd">
+<td><code>loan_purpose</code></td>
+<td><code>VARCHAR(255)</code></td>
+<td>yes</td>
+<td><code>NULL</code></td>
+<td>—</td>
+<td>Free-text purpose of the loan</td>
+</tr>
+<tr class="even">
+<td><code>missed_payments</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td><code>0</code></td>
+<td><code>CHECK (&gt;= 0)</code></td>
+<td>Missed payments in the last 12 months</td>
+</tr>
+<tr class="odd">
+<td><code>created_at</code></td>
+<td><code>DATETIME</code></td>
+<td>no</td>
+<td><code>CURRENT_TIMESTAMP</code></td>
+<td>Indexed</td>
+<td>Submission timestamp</td>
+</tr>
+<tr class="even">
+<td><code>reviewed_by_manager_id</code></td>
+<td><code>INT</code></td>
+<td>yes</td>
+<td><code>NULL</code></td>
+<td>FK → <code>bank_managers</code></td>
+<td>Manager assigned to review the file</td>
+</tr>
+</tbody>
+</table>
+<p><code>income_verified</code> is the persisted form of “a proof-of-income document is attached”. The frontend derives it from the upload; the database stores only the boolean, not the file.</p>
+<h3 id="54-loan_decisions--30-rows">5.4 <code>loan_decisions</code> — 30 rows</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Type</th>
+<th>Null</th>
+<th>Default</th>
+<th>Key / constraint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>decision_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>auto-increment</td>
+<td>PK</td>
+<td>Surrogate decision identifier</td>
+</tr>
+<tr class="even">
+<td><code>application_id</code></td>
+<td><code>INT</code></td>
+<td>no</td>
+<td>—</td>
+<td>FK → <code>loan_applications</code>, UNIQUE</td>
+<td>Application being decided</td>
+</tr>
+<tr class="odd">
+<td><code>status</code></td>
+<td><code>ENUM</code></td>
+<td>no</td>
+<td><code>PENDING</code></td>
+<td>Indexed</td>
+<td>Decision state: <code>PENDING</code>, <code>APPROVED</code> or <code>REJECTED</code></td>
+</tr>
+<tr class="even">
+<td><code>reason</code></td>
+<td><code>TEXT</code></td>
+<td>yes</td>
+<td><code>NULL</code></td>
+<td>—</td>
+<td>Human-readable justification shown to the client</td>
+</tr>
+<tr class="odd">
+<td><code>decision_date</code></td>
+<td><code>DATETIME</code></td>
+<td>no</td>
+<td><code>CURRENT_TIMESTAMP</code></td>
+<td>—</td>
+<td>Date the decision row was created</td>
+</tr>
+<tr class="even">
+<td><code>decided_by_manager_id</code></td>
+<td><code>INT</code></td>
+<td>yes</td>
+<td><code>NULL</code></td>
+<td>FK → <code>bank_managers</code></td>
+<td>Manager who recorded the decision</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>UNIQUE</code> constraint on <code>application_id</code> is what enforces “at most one decision per application”. The enum uses uppercase values; the frontend uses lowercase <code>pending</code> / <code>approved</code> / <code>denied</code> (see <a href="#84-status-vocabulary-mismatch">§8.4</a>).</p>
+<hr />
+<h2 id="6-data-profile">6. Data profile</h2>
+<h3 id="61-applicant-demographics">6.1 Applicant demographics</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Attribute</th>
+<th>Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Age bands</td>
+<td>18–29: 9 · 30–39: 11 · 40–49: 6 · 50–59: 4</td>
+</tr>
+<tr class="even">
+<td>Employment contract</td>
+<td>CDI: 24 (80%) · non-CDI: 6 (20%)</td>
+</tr>
+<tr class="odd">
+<td>Marital status</td>
+<td>Married: 19 (63.3%) · single: 11 (36.7%)</td>
+</tr>
+<tr class="even">
+<td>Children</td>
+<td>0: 11 · 1: 6 · 2: 8 · 3: 4 · 4: 1 (average 1.27)</td>
+</tr>
+<tr class="odd">
+<td>Occupations</td>
+<td>30 distinct job titles, from barista and cashier to physician and university professor</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-application-financials">6.2 Application financials</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Attribute</th>
+<th>Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Income verification</td>
+<td>Verified: 24 (80%) · unverified: 6 (20%)</td>
+</tr>
+<tr class="even">
+<td>Missed payments</td>
+<td>0: 22 · 1: 3 · 2: 3 · 3: 1 · 4: 1</td>
+</tr>
+<tr class="odd">
+<td>Duration (months)</td>
+<td>12: 1 · 18: 1 · 24: 8 · 30: 2 · 36: 9 · 48: 6 · 60: 3</td>
+</tr>
+<tr class="even">
+<td>Loan purpose</td>
+<td>27 distinct values for 30 rows; only <em>Home Renovation</em>, <em>Car Purchase</em> and <em>Debt Consolidation</em> appear twice</td>
+</tr>
+<tr class="odd">
+<td>DTI ≤ 40%</td>
+<td>24 applications</td>
+</tr>
+<tr class="even">
+<td>DTI 40–50%</td>
+<td>2 applications</td>
+</tr>
+<tr class="odd">
+<td>DTI &gt; 50%</td>
+<td>4 applications (maximum 70.14%)</td>
+</tr>
+</tbody>
+</table>
+<p>Income, debt, savings and loan amount are broadly correlated: higher incomes carry larger requested amounts, but the debt ratio stays in a narrow band for the approved group. That is intentional — it keeps the approved population internally consistent for UI demonstrations.</p>
+<h3 id="63-manager-workload">6.3 Manager workload</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Manager</th>
+<th style="text-align: right;">Applications assigned</th>
+<th style="text-align: right;">Decisions recorded</th>
+<th style="text-align: right;">Approved</th>
+<th style="text-align: right;">Rejected</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sarah Connor (1)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td>Alexandre Martin (2)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td>No decision author (pending)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1 pending</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Applications alternate between the two managers by ID (odd → manager 1, even → manager 2). The single pending file (application 17) still has a reviewer assigned but no decision author.</p>
+<h3 id="64-derived-assessment-profile">6.4 Derived assessment profile</h3>
+<p>Applying the documented rules (<code>src/utils/loan.ts</code>, 6.5% annual rate, 40% DTI limit, 2 missed payments, CDI/savings/36× advisory checks) to each row yields:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Recommendation</th>
+<th style="text-align: right;">Applications</th>
+<th>Score</th>
+<th>Recorded decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Strong profile</td>
+<td style="text-align: right;">24</td>
+<td>100</td>
+<td>23 approved, 1 pending</td>
+</tr>
+<tr class="even">
+<td>Manual review advised</td>
+<td style="text-align: right;">0</td>
+<td>86–93</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>High risk</td>
+<td style="text-align: right;">6</td>
+<td>2, 9, 37 (×4)</td>
+<td>6 rejected</td>
+</tr>
+</tbody>
+</table>
+<p>The derived result matches the recorded outcome for <strong>all 30 rows</strong>: no approved file fails a hard rule, and no rejected file passes all of them. This makes the seed a clean fixture for regression-testing the assessment engine, but it also means the data cannot demonstrate a disagreement between the engine and the manager.</p>
+<p>The estimated installment is computed with the annuity formula:</p>
+<pre class="text"><code>payment = principal × r / (1 − (1 + r)^−months),  r = 0.065 / 12</code></pre>
+<p>and the debt-to-income ratio as:</p>
+<pre class="text"><code>DTI = (total_debt + payment) / monthly_income</code></pre>
+<hr />
+<h2 id="7-sample-records">7. Sample records</h2>
+<p>The table compares three representative files: an approved case, the only pending case, and a rejected case.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Application 1 — approved</th>
+<th>Application 17 — pending</th>
+<th>Application 23 — rejected</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Applicant</td>
+<td>John Doe, 32, Software Engineer</td>
+<td>Hamza Chraibi, 28, Sales Representative</td>
+<td>Anis Belhaj, 22, Retail Cashier</td>
+</tr>
+<tr class="even">
+<td>Profile</td>
+<td>CDI, married, 2 children</td>
+<td>CDI, single, no children</td>
+<td>Non-CDI, single, no children</td>
+</tr>
+<tr class="odd">
+<td>Income / debt / savings</td>
+<td>€4,500 / €300 / €15,000</td>
+<td>€3,100 / €400 / €5,500</td>
+<td>€1,300 / €600 / €300</td>
+</tr>
+<tr class="even">
+<td>Income verified</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Loan</td>
+<td>€25,000 over 36 months, <em>Home Renovation</em></td>
+<td>€14,000 over 36 months, <em>Car Purchase</em></td>
+<td>€7,000 over 24 months, <em>Debt Consolidation</em></td>
+</tr>
+<tr class="even">
+<td>Missed payments</td>
+<td>0</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>Estimated installment</td>
+<td>€766.23</td>
+<td>€429.09</td>
+<td>€311.82</td>
+</tr>
+<tr class="even">
+<td>DTI</td>
+<td>23.69%</td>
+<td>26.74%</td>
+<td>70.14%</td>
+</tr>
+<tr class="odd">
+<td>Decision</td>
+<td><code>APPROVED</code> by Sarah Connor</td>
+<td><code>PENDING</code>, no decision author</td>
+<td><code>REJECTED</code> by Sarah Connor</td>
+</tr>
+<tr class="even">
+<td>Reason</td>
+<td>“Applicant has stable CDI, healthy debt ratio, and sufficient savings.”</td>
+<td>“Under secondary assessment for income-to-installment ratio.”</td>
+<td>“Excessive debt ratio (&gt;45%), 4 missed payments, no stable contract.”</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-data-quality-notes">8. Data quality notes</h2>
+<p>The dataset is internally consistent but has deliberate and accidental limitations that anyone using it should know.</p>
+<h3 id="81-cnib-format-does-not-match-the-frontend">8.1 CNIB format does not match the frontend</h3>
+<p><code>applicants.id_card_number</code> stores short codes such as <code>CIN-100234</code> and <code>CIN-106901</code>. The client form validates <strong>exactly 18 digits</strong> (<code>ID_NUMBER_DIGITS = 18</code> in <code>src/config.ts</code>) and strips spaces. Any of these seeded applicants would be rejected by the form, and an API that reuses the same validation would reject the seed.</p>
+<p><strong>Impact:</strong> end-to-end tests that read applicants from MySQL and post them back through the UI will fail on identity validation. Replace the values with 18-digit numbers (for example <code>100000000000100234</code>) before integration testing, or relax the validation for imported records.</p>
+<h3 id="82-no-proof-of-income-document-is-stored">8.2 No proof-of-income document is stored</h3>
+<p><code>income_verified</code> is a boolean, but there is no column, table or path for the uploaded payslip or tax notice. The frontend treats the document as mandatory and derives <code>income_verified</code> from its presence.</p>
+<p><strong>Impact:</strong> a manager reviewing data from MySQL cannot open the supporting evidence, and the audit trail cannot prove <em>why</em> income was considered verified. A <code>loan_documents</code> table (or an object-storage reference) is required for parity with the UI.</p>
+<h3 id="83-timestamps-carry-no-business-meaning">8.3 Timestamps carry no business meaning</h3>
+<p>All <code>created_at</code>, <code>updated_at</code> and <code>decision_date</code> values come from column defaults, because the seed never supplies them. Consequences:</p>
+<ul>
+<li>Every application appears to have been submitted at the moment the seed ran.</li>
+<li>The pending decision (application 17) still has a <code>decision_date</code>, even though no decision has been made. Semantically, that column should be <code>NULL</code> until the status changes.</li>
+<li>Sorting by date, “applications this week” counters and time-series charts cannot be tested meaningfully.</li>
+</ul>
+<p><strong>Fix:</strong> seed explicit, staggered dates in the past and allow <code>decision_date</code> to be <code>NULL</code> for pending rows.</p>
+<h3 id="84-status-vocabulary-mismatch">8.4 Status vocabulary mismatch</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Database</th>
+<th>Frontend / API</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>PENDING</code></td>
+<td><code>pending</code></td>
+</tr>
+<tr class="even">
+<td><code>APPROVED</code></td>
+<td><code>approved</code></td>
+</tr>
+<tr class="odd">
+<td><code>REJECTED</code></td>
+<td><code>denied</code></td>
+</tr>
+</tbody>
+</table>
+<p>The mapping is not stored anywhere and must be handled by the backend serialiser. <code>REJECTED</code> → <code>denied</code> is the non-obvious one and a common source of bugs in filters and badges.</p>
+<h3 id="85-free-text-loan-purposes-are-not-normalised">8.5 Free-text loan purposes are not normalised</h3>
+<p><code>loan_purpose</code> is <code>VARCHAR(255)</code> with 27 distinct values across 30 rows. The vocabulary differs from the frontend list in <code>src/config.ts</code> (<code>Home purchase</code>, <code>Home renovation</code>, <code>Vehicle</code>, <code>Education</code>, <code>Business</code>, <code>Debt consolidation</code>, <code>Medical expenses</code>, <code>Personal expenses</code>, <code>Other</code>):</p>
+<ul>
+<li>Case differs (<code>Home Renovation</code> vs <code>Home renovation</code>).</li>
+<li>Synonyms are used (<code>Car Purchase</code>, <code>Vehicle Purchase</code>, <code>Family Car</code>, <code>Truck Purchase</code>, <code>Luxury Vehicle</code>).</li>
+<li>Some values have no direct equivalent (<code>Studio Equipment</code>, <code>Clinic Expansion</code>, <code>Wedding &amp; Travel</code>).</li>
+</ul>
+<p><strong>Impact:</strong> grouping by purpose is unreliable; a lookup table with a canonical purpose ID would be preferable.</p>
+<h3 id="86-durations-outside-the-ui-dropdown">8.6 Durations outside the UI dropdown</h3>
+<p>The seed uses 18- and 30-month durations. Both are valid under the policy (6–360 months), but neither is offered by the form dropdown (<code>12, 24, 36, 48, 60, 84, 120, 180, 240</code>).</p>
+<p><strong>Impact:</strong> the data is useful for API robustness tests, but those two files cannot be recreated through the UI.</p>
+<h3 id="87-age-is-stored-not-derived">8.7 Age is stored, not derived</h3>
+<p>There is no date of birth. <code>age</code> is an integer snapshot, so it drifts over time, and the database only enforces <code>age &gt;= 18</code> — not the policy maximum of 70. The seed’s range (22–58) happens to comply, but nothing prevents an out-of-policy row from being inserted later.</p>
+<h3 id="88-nullable-fields-that-the-ui-requires">8.8 Nullable fields that the UI requires</h3>
+<p><code>job</code> and <code>loan_purpose</code> are nullable in the schema, while the form requires both. The seed populates them everywhere, so the mismatch is invisible until the backend starts accepting partial writes.</p>
+<h3 id="89-review-assignment-vs-decision-authorship">8.9 Review assignment vs decision authorship</h3>
+<p><code>reviewed_by_manager_id</code> is populated on all 30 applications, including the pending one, whereas <code>decided_by_manager_id</code> is <code>NULL</code> for that file. The two fields have different meanings (assignment vs authorship) but similar names. There is also no <code>reviewed_at</code> timestamp — the only review time available is <code>loan_decisions.decision_date</code>, which does not exist for undecided files.</p>
+<h3 id="810-deletion-behaviour-weakens-the-audit-trail">8.10 Deletion behaviour weakens the audit trail</h3>
+<p>Foreign keys use <code>ON DELETE CASCADE</code> from applicant to application to decision, and <code>ON DELETE SET NULL</code> from manager to application/decision. Deleting an applicant therefore erases their applications <em>and</em> decisions; deleting a manager anonymises past decisions. For a regulated credit process, history should be retained (soft deletes or <code>RESTRICT</code>).</p>
+<h3 id="811-seed-does-not-cover-the-full-relationship-model">8.11 Seed does not cover the full relationship model</h3>
+<p>The schema allows one applicant to have many applications and an application to have no decision. The seed has exactly one of each, so:</p>
+<ul>
+<li>duplicate applications by the same applicant are untested;</li>
+<li>an application without a decision row is untested;</li>
+<li>a decision for a non-existent application is prevented by the FK, but that path has no fixture either.</li>
+</ul>
+<h3 id="812-class-balance-and-missing-edge-cases">8.12 Class balance and missing edge cases</h3>
+<p>The approved/rejected/pending split is 23/6/1. There are no advisory-only (“manual review”) cases, no manager overrides, no zero-income files, no maximum-age files, and no very large or very long loans. Any metric computed on this data (approval rate, average ticket, default proxy) is a property of the fixture, not of a real population.</p>
+<hr />
+<h2 id="9-intended-use-and-limitations">9. Intended use and limitations</h2>
+<h3 id="suitable-for">Suitable for</h3>
+<ul>
+<li>UI development and demonstration of the client portal, manager queue and review drawer.</li>
+<li>Backend API contract tests against a known, stable fixture.</li>
+<li>Regression tests for the eligibility engine (the 24/6 split is a clean expected result).</li>
+<li>SQL exercises: joins, aggregates, status filters, constraint checks.</li>
+<li>Mock reporting layouts and screenshots.</li>
+</ul>
+<h3 id="not-suitable-for">Not suitable for</h3>
+<ul>
+<li>Training or validating a credit-scoring or machine-learning model.</li>
+<li>Estimating real approval rates, default rates or portfolio risk.</li>
+<li>Performance or volume testing (62 rows is far below any realistic scale).</li>
+<li>Compliance, audit or regulatory reporting.</li>
+<li>Any conclusion about fairness or bias — the sample is tiny and hand-built.</li>
+</ul>
+<h3 id="ethical-and-legal-note">Ethical and legal note</h3>
+<p>The identities are invented, but they resemble real names and the financial profiles are realistic. Treat the database as <strong>test data</strong>: do not merge it with real customer records, and do not present the approval statistics as bank results without labelling them as synthetic.</p>
+<hr />
+<h2 id="10-loading-and-verification">10. Loading and verification</h2>
+<h3 id="101-load">10.1 Load</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="op">&lt;</span> sql/schema.sql</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="op">&lt;</span> sql/seed.sql</span></code></pre></div>
+<p>Or from inside the MySQL client:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SOURCE</span> sql<span class="op">/</span><span class="kw">schema</span>.sql;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SOURCE</span> sql<span class="op">/</span>seed.sql;</span></code></pre></div>
+<p><code>schema.sql</code> creates <code>loan_approval_db</code>, drops the four tables in dependency order, recreates them and adds the indexes. <code>seed.sql</code> assumes the schema already exists and only inserts data.</p>
+<h3 id="102-verification-queries">10.2 Verification queries</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Row counts</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="st">&#39;bank_managers&#39;</span> <span class="kw">AS</span> table_name, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> rows_count <span class="kw">FROM</span> bank_managers</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span> <span class="kw">ALL</span> <span class="kw">SELECT</span> <span class="st">&#39;applicants&#39;</span>, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> applicants</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span> <span class="kw">ALL</span> <span class="kw">SELECT</span> <span class="st">&#39;loan_applications&#39;</span>, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> loan_applications</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span> <span class="kw">ALL</span> <span class="kw">SELECT</span> <span class="st">&#39;loan_decisions&#39;</span>, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> loan_decisions;</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- Decision distribution and requested volume</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> d.status, <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> files, <span class="fu">SUM</span>(a.loan_amount) <span class="kw">AS</span> requested_eur</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> loan_decisions d</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="kw">JOIN</span> loan_applications a <span class="kw">ON</span> a.application_id <span class="op">=</span> d.application_id</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> d.status;</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- Orphan checks (both should return 0)</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> apps_without_applicant</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> loan_applications a</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> applicants p <span class="kw">ON</span> p.applicant_id <span class="op">=</span> a.applicant_id</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> p.applicant_id <span class="kw">IS</span> <span class="kw">NULL</span>;</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> apps_without_decision</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> loan_applications a</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> loan_decisions d <span class="kw">ON</span> d.application_id <span class="op">=</span> a.application_id</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> d.decision_id <span class="kw">IS</span> <span class="kw">NULL</span>;</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">-- Applications outside the documented policy</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> application_id, monthly_income, loan_amount, loan_duration, missed_payments</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> loan_applications</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> monthly_income <span class="op">&lt;=</span> <span class="dv">0</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>   <span class="kw">OR</span> loan_amount <span class="kw">NOT</span> <span class="kw">BETWEEN</span> <span class="dv">500</span> <span class="kw">AND</span> <span class="dv">1000000</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>   <span class="kw">OR</span> loan_duration <span class="kw">NOT</span> <span class="kw">BETWEEN</span> <span class="dv">6</span> <span class="kw">AND</span> <span class="dv">360</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>   <span class="kw">OR</span> missed_payments <span class="op">&gt;</span> <span class="dv">2</span>;</span></code></pre></div>
+<p>Expected results: 2 / 30 / 30 / 30 rows; 23 approved, 6 rejected, 1 pending; €640,000 / €59,000 / €14,000; zero orphans. The last query returns the two files with more than two missed payments (applications 8 and 23), plus any future row that breaks the amount or duration rules.</p>
+<hr />
+<h2 id="11-traceability">11. Traceability</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Artifact</th>
+<th>Role in this dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="../sql/schema.sql"><code>sql/schema.sql</code></a></td>
+<td>Authoritative DDL: tables, keys, checks, indexes</td>
+</tr>
+<tr class="even">
+<td><a href="../sql/seed.sql"><code>sql/seed.sql</code></a></td>
+<td>Authoritative data: 2 managers, 30 applicants, 30 applications, 30 decisions</td>
+</tr>
+<tr class="odd">
+<td><a href="../UML_Model_Loan_Approval.drawio"><code>UML_Model_Loan_Approval.drawio</code></a></td>
+<td>Source class model (<code>Applicant</code>, <code>LoanApplication</code>, <code>LoanDecision</code>, <code>BankManager</code>)</td>
+</tr>
+<tr class="even">
+<td><a href="LOAN_RULES.md"><code>docs/LOAN_RULES.md</code></a></td>
+<td>Rules used to interpret and cross-check the financial fields</td>
+</tr>
+<tr class="odd">
+<td><a href="API_CONTRACT.md"><code>docs/API_CONTRACT.md</code></a></td>
+<td>Field names and shapes expected by the frontend</td>
+</tr>
+<tr class="even">
+<td><a href="../src/config.ts"><code>src/config.ts</code></a></td>
+<td>Policy thresholds, interest rate, purpose and duration lists</td>
+</tr>
+<tr class="odd">
+<td><a href="../src/types.ts"><code>src/types.ts</code></a></td>
+<td>Frontend domain types aligned with the UML classes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-a--full-application-register">Appendix A — Full application register</h2>
+<p>Amounts in EUR. Installment and DTI are derived with the documented annuity formula at 6.5% annual rate. The complete financial fields, purposes and decision reasons are in <a href="../sql/seed.sql"><code>sql/seed.sql</code></a>.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">ID</th>
+<th>Applicant</th>
+<th style="text-align: right;">Income</th>
+<th style="text-align: right;">Loan</th>
+<th style="text-align: right;">Months</th>
+<th style="text-align: right;">Installment</th>
+<th style="text-align: right;">DTI</th>
+<th style="text-align: center;">Verified</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td>John Doe</td>
+<td style="text-align: right;">4,500</td>
+<td style="text-align: right;">25,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">766.23</td>
+<td style="text-align: right;">23.69%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td>Jane Martin</td>
+<td style="text-align: right;">1,800</td>
+<td style="text-align: right;">12,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">534.56</td>
+<td style="text-align: right;">57.48%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td>Karim Benali</td>
+<td style="text-align: right;">3,200</td>
+<td style="text-align: right;">10,000</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">862.96</td>
+<td style="text-align: right;">33.22%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td>Amina Mansouri</td>
+<td style="text-align: right;">3,800</td>
+<td style="text-align: right;">18,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">801.83</td>
+<td style="text-align: right;">25.05%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td>Lucas Dubois</td>
+<td style="text-align: right;">4,200</td>
+<td style="text-align: right;">30,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">711.45</td>
+<td style="text-align: right;">27.65%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td>Emma Bernard</td>
+<td style="text-align: right;">5,100</td>
+<td style="text-align: right;">40,000</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">782.65</td>
+<td style="text-align: right;">27.11%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td>Youssef El Amrani</td>
+<td style="text-align: right;">3,600</td>
+<td style="text-align: right;">15,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">459.74</td>
+<td style="text-align: right;">34.99%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td>Sarah Jenkins</td>
+<td style="text-align: right;">1,600</td>
+<td style="text-align: right;">8,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">356.37</td>
+<td style="text-align: right;">47.27%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td>Mohamed Alami</td>
+<td style="text-align: right;">5,500</td>
+<td style="text-align: right;">50,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1,185.75</td>
+<td style="text-align: right;">27.92%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td>Chloe Laurent</td>
+<td style="text-align: right;">4,000</td>
+<td style="text-align: right;">22,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">674.28</td>
+<td style="text-align: right;">21.86%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td>Tariq Haddad</td>
+<td style="text-align: right;">4,700</td>
+<td style="text-align: right;">28,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">664.02</td>
+<td style="text-align: right;">33.28%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">12</td>
+<td>Sophie Moreau</td>
+<td style="text-align: right;">2,800</td>
+<td style="text-align: right;">12,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">534.56</td>
+<td style="text-align: right;">22.66%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">13</td>
+<td>Omar Zeroual</td>
+<td style="text-align: right;">4,100</td>
+<td style="text-align: right;">20,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">612.98</td>
+<td style="text-align: right;">21.05%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">14</td>
+<td>Camille Leroy</td>
+<td style="text-align: right;">1,400</td>
+<td style="text-align: right;">6,000</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">350.75</td>
+<td style="text-align: right;">50.05%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">15</td>
+<td>Bilal Kabbaj</td>
+<td style="text-align: right;">4,900</td>
+<td style="text-align: right;">35,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">830.02</td>
+<td style="text-align: right;">32.25%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">16</td>
+<td>Clara Fontaine</td>
+<td style="text-align: right;">3,900</td>
+<td style="text-align: right;">17,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">757.29</td>
+<td style="text-align: right;">27.11%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">17</td>
+<td>Hamza Chraibi</td>
+<td style="text-align: right;">3,100</td>
+<td style="text-align: right;">14,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">429.09</td>
+<td style="text-align: right;">26.74%</td>
+<td style="text-align: center;">Yes</td>
+<td>Pending</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">18</td>
+<td>Lea Roussel</td>
+<td style="text-align: right;">6,200</td>
+<td style="text-align: right;">60,000</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1,173.97</td>
+<td style="text-align: right;">27.00%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">19</td>
+<td>Mehdi Tazi</td>
+<td style="text-align: right;">4,800</td>
+<td style="text-align: right;">25,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">766.23</td>
+<td style="text-align: right;">20.13%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">20</td>
+<td>Manon Girard</td>
+<td style="text-align: right;">2,500</td>
+<td style="text-align: right;">10,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">445.46</td>
+<td style="text-align: right;">23.82%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">21</td>
+<td>Rachid Berrada</td>
+<td style="text-align: right;">5,800</td>
+<td style="text-align: right;">30,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">919.47</td>
+<td style="text-align: right;">22.75%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">22</td>
+<td>Juliette Bonnet</td>
+<td style="text-align: right;">3,300</td>
+<td style="text-align: right;">16,000</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">579.28</td>
+<td style="text-align: right;">25.13%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">23</td>
+<td>Anis Belhaj</td>
+<td style="text-align: right;">1,300</td>
+<td style="text-align: right;">7,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">311.82</td>
+<td style="text-align: right;">70.14%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">24</td>
+<td>Ines Gauthier</td>
+<td style="text-align: right;">4,400</td>
+<td style="text-align: right;">26,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">796.87</td>
+<td style="text-align: right;">24.93%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">25</td>
+<td>Reda Naciri</td>
+<td style="text-align: right;">6,500</td>
+<td style="text-align: right;">55,000</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1,076.14</td>
+<td style="text-align: right;">28.86%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">26</td>
+<td>Charlotte Perrin</td>
+<td style="text-align: right;">2,200</td>
+<td style="text-align: right;">11,000</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">490.01</td>
+<td style="text-align: right;">42.73%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">27</td>
+<td>Walid Fassi</td>
+<td style="text-align: right;">3,700</td>
+<td style="text-align: right;">19,000</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">582.33</td>
+<td style="text-align: right;">29.25%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">28</td>
+<td>Alice Fournier</td>
+<td style="text-align: right;">2,900</td>
+<td style="text-align: right;">15,000</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">543.07</td>
+<td style="text-align: right;">51.49%</td>
+<td style="text-align: center;">No</td>
+<td>Rejected</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">29</td>
+<td>Driss Zouaoui</td>
+<td style="text-align: right;">5,300</td>
+<td style="text-align: right;">32,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">758.88</td>
+<td style="text-align: right;">19.98%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">30</td>
+<td>Laura Mercier</td>
+<td style="text-align: right;">5,900</td>
+<td style="text-align: right;">45,000</td>
+<td style="text-align: right;">48</td>
+<td style="text-align: right;">1,067.17</td>
+<td style="text-align: right;">24.87%</td>
+<td style="text-align: center;">Yes</td>
+<td>Approved</td>
+</tr>
+</tbody>
+</table>
+<h3 id="revision-history">Revision history</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Date</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1.0</td>
+<td>2026-11-11</td>
+<td>Initial description of the 30-record fictional dataset (<code>loan_approval_db</code>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</body>
+</html>

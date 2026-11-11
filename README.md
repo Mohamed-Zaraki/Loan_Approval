@@ -87,6 +87,16 @@ Demo manager login:
 - Email: `manager@loanflow.demo`
 - Password: `manager123`
 
+## Test database (MySQL)
+
+The repository also ships a fictional MySQL dataset for backend and SQL work: `sql/schema.sql`
+defines `loan_approval_db`, and `sql/seed.sql` loads 30 applications with 2 managers and 30
+decisions. It is separate from the browser demo data above.
+
+The schema, data dictionary, distributions, data-quality notes and intended use are documented in
+[docs/DATASET_DESCRIPTION.md](docs/DATASET_DESCRIPTION.md), with a printable
+[docs/LoanFlow-Dataset-Description.pdf](docs/LoanFlow-Dataset-Description.pdf).
+
 ## Connect the Python API
 
 1. Start the backend on `http://127.0.0.1:8000`.
@@ -124,9 +134,10 @@ src/
   config.ts            policy thresholds, interest rate, purposes, terms
   types.ts             UML-aligned domain types
   styles.css           design system and responsive layout
-docs/API_CONTRACT.md   REST contract for the Python backend
-docs/FRONTEND_USER_STORIES_TASKS.md   user stories mapped to implementation tasks
-docs/FRONTEND_USER_STORIES_CODE.md    code excerpts for each task
+docs/API_CONTRACT.md                 REST contract for the Python backend
+docs/DATASET_DESCRIPTION.md          dataset description for the MySQL test data
+docs/FRONTEND_USER_STORIES_TASKS.md  user stories mapped to implementation tasks
+docs/FRONTEND_USER_STORIES_CODE.md   code excerpts for each task
 ```
 
 ## Decision rules used for the indicative assessment

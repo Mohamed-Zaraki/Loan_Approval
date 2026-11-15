@@ -1,6 +1,5 @@
 import type { View } from '../App';
 import type { ManagerSession } from '../auth';
-import { isDemo } from '../api';
 import { initials } from '../utils/format';
 import { LogOut, LogoMark } from './Icons';
 
@@ -49,13 +48,6 @@ export function Header({ view, onNavigate, manager, onSignOut }: HeaderProps) {
         </nav>
 
         <div className="header-meta">
-          {isDemo && (
-            <span className="mode-pill">
-              <span className="dot" />
-              Demo data
-            </span>
-          )}
-
           {manager && (
             <>
               <span className="header-divider" aria-hidden="true" />

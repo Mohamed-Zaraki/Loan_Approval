@@ -74,7 +74,7 @@ export function DocumentViewer({ document: incomeDocument, onClose }: DocumentVi
               <iframe src={objectUrl} title={`Uploaded document: ${incomeDocument.name}`} />
             )
           ) : (
-            <p className="viewer-empty">This demo record has no stored file to preview.</p>
+            <p className="viewer-empty">This record has no stored file to preview.</p>
           )}
         </div>
 

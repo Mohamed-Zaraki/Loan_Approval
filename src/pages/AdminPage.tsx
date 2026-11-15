@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { api, canResetDemo } from '../api';
+import { api } from '../api';
 import { ApplicationDrawer } from '../components/ApplicationDrawer';
 import {
   ArrowRight,
@@ -27,7 +27,6 @@ import {
   ratioTone,
   relativeTime,
 } from '../utils/format';
-import { clearRememberedApplications } from '../utils/storage';
 
 type StatusFilter = 'all' | ApplicationStatus;
 type SortOption = 'newest' | 'oldest' | 'amount';
@@ -47,7 +46,6 @@ export function AdminPage({ managerName }: { managerName: string }) {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortOption>('newest');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [resetting, setResetting] = useState(false);
   const { toast, show, dismiss } = useToast();
 
   const load = useCallback(async () => {
@@ -123,25 +121,6 @@ export function AdminPage({ managerName }: { managerName: string }) {
     return updated;
   }
 
-  async function handleReset() {
-    const resetDemoData = api.resetDemoData;
-    if (!resetDemoData || resetting) return;
-
-    setResetting(true);
-    try {
-      setApplications(await resetDemoData());
-      clearRememberedApplications();
-      setSelectedId(null);
-      setStatusFilter('all');
-      setQuery('');
-      show('Demo data restored to its initial state.', 'info');
-    } catch (error) {
-      show(error instanceof Error ? error.message : 'Could not reset demo data.', 'error');
-    } finally {
-      setResetting(false);
-    }
-  }
-
   return (
     <main className="page">
       <div className="container">
@@ -153,19 +132,6 @@ export function AdminPage({ managerName }: { managerName: string }) {
               Every submitted request, its affordability indicators and the decision on record.
               Open a row to review the file.
             </p>
-          </div>
-          <div className="head-actions">
-            {canResetDemo && (
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => void handleReset()}
-                disabled={resetting}
-              >
-                {resetting ? <span className="spinner" /> : null}
-                Reset demo data
-              </button>
-            )}
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { DEMO_MANAGER, signInManager } from '../auth';
+import { signInManager } from '../auth';
 import type { ManagerSession } from '../auth';
 import { Field, TextInput } from '../components/Fields';
 import {
@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Bank,
   Check,
-  Lock,
   ShieldCheck,
 } from '../components/Icons';
 
@@ -35,7 +34,7 @@ export function ManagerLoginPage({
     setError(null);
     setSubmitting(true);
 
-    // Small delay to mirror a network round trip in the prototype.
+    // Small delay to mirror a network round trip.
     await new Promise((resolve) => window.setTimeout(resolve, 450));
 
     try {
@@ -45,12 +44,6 @@ export function ManagerLoginPage({
       setError(signInError instanceof Error ? signInError.message : 'Could not sign in.');
       setSubmitting(false);
     }
-  }
-
-  function fillDemoCredentials() {
-    setEmail(DEMO_MANAGER.email);
-    setPassword(DEMO_MANAGER.password);
-    setError(null);
   }
 
   return (
@@ -109,7 +102,7 @@ export function ManagerLoginPage({
 
           <div className="login-aside-note">
             <ShieldCheck size={16} />
-            <span>Demo mode: data stays in this browser until a backend is connected.</span>
+            <span>Your session ends when you sign out. Use manager access on trusted devices only.</span>
           </div>
         </aside>
 
@@ -179,33 +172,6 @@ export function ManagerLoginPage({
               )}
             </button>
           </form>
-
-          <div className="demo-access">
-            <div className="demo-access-head">
-              <Lock size={14} />
-              <strong>Demo credentials</strong>
-            </div>
-            <div className="demo-access-row">
-              <span>Email</span>
-              <code>{DEMO_MANAGER.email}</code>
-            </div>
-            <div className="demo-access-row">
-              <span>Password</span>
-              <code>{DEMO_MANAGER.password}</code>
-            </div>
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm btn-block"
-              onClick={fillDemoCredentials}
-            >
-              Fill demo credentials
-            </button>
-          </div>
-
-          <p className="login-footnote">
-            <ShieldCheck size={13} /> Prototype sign-in only. Real authentication must be enforced
-            by the backend.
-          </p>
         </section>
       </div>
     </main>

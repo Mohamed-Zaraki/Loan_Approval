@@ -132,9 +132,9 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
 
       <footer className="container landing-foot">
         <span>
-          <span className="brand-dot" /> LoanFlow — front-end prototype
+          <span className="brand-dot" /> LoanFlow — loan origination platform
         </span>
-        <span>Data stays in this browser · No real lending decisions</span>
+        <span>Every decision recorded with a reason and timestamp</span>
       </footer>
     </main>
   );

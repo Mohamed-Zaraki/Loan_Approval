@@ -247,7 +247,7 @@ export function ApplicationDrawer({
                         <Check size={12} /> Available for review
                       </>
                     ) : (
-                      'Stored on the server — open to review'
+                      'Attached — preview unavailable'
                     )}
                   </span>
                 </div>

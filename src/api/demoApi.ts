@@ -87,7 +87,7 @@ function writeStore(applications: LoanApplication[]): void {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
   } catch {
     throw new Error(
-      'Browser storage is full. Remove an application or reset the demo data, then try again.',
+      'Storage is full. Remove an application and try again.',
     );
   }
 }
@@ -130,7 +130,7 @@ interface SeedSpec {
 
 /**
  * Builds a tiny, valid one-page PDF so seeded applications have a document the
- * manager can actually open in the demo. ASCII only so `btoa` stays happy.
+ * manager can actually open in the interface. ASCII only so `btoa` stays happy.
  */
 function makeSampleDocumentDataUrl(applicantName: string, documentName: string): string {
   const escape = (text: string) => text.replace(/[\\()]/g, (match) => `\\${match}`);
@@ -142,7 +142,7 @@ function makeSampleDocumentDataUrl(applicantName: string, documentName: string):
     'Net monthly income: 92,000.00',
     'Period: October 2026',
     '',
-    'Sample document generated for the LoanFlow demo.',
+    'Document provided in support of this application.',
   ];
 
   const content = [

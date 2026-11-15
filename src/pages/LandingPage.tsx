@@ -1,5 +1,5 @@
 import type { View } from '../App';
-import { ArrowRight, Bank, Check, FileText, ShieldCheck, User, Wallet } from '../components/Icons';
+import { ArrowRight, Check, FileText, ShieldCheck, User, Wallet } from '../components/Icons';
 
 export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }) {
   return (
@@ -23,13 +23,6 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
                 onClick={() => onNavigate('client')}
               >
                 Start an application <ArrowRight size={17} />
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline btn-lg"
-                onClick={() => onNavigate('manager')}
-              >
-                <Bank size={16} /> Manager console
               </button>
             </div>
 
@@ -56,7 +49,6 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
                 <span className="role-icon">
                   <User size={22} />
                 </span>
-                <span className="role-index">01</span>
               </span>
               <span className="role-kicker">For applicants</span>
               <h2>Client portal</h2>
@@ -66,31 +58,6 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
               </p>
               <span className="role-action">
                 Start an application
-                <span className="role-arrow">
-                  <ArrowRight size={15} />
-                </span>
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="role-card role-manager"
-              onClick={() => onNavigate('manager')}
-            >
-              <span className="role-top">
-                <span className="role-icon">
-                  <Bank size={22} />
-                </span>
-                <span className="role-index">02</span>
-              </span>
-              <span className="role-kicker">For bank managers</span>
-              <h2>Manager console</h2>
-              <p>
-                See every request, review eligibility indicators, and approve or deny with a
-                documented reason.
-              </p>
-              <span className="role-action">
-                Open review queue
                 <span className="role-arrow">
                   <ArrowRight size={15} />
                 </span>

@@ -431,19 +431,9 @@ tr:focus-visible {
   border-color: #d6d9f5;
 }
 
-.role-manager {
-  color: #fff;
-  background:
-    radial-gradient(380px 220px at 112% -14%, rgba(129, 140, 248, 0.5), transparent 62%),
-    radial-gradient(280px 200px at -10% 110%, rgba(6, 182, 212, 0.24), transparent 65%),
-    linear-gradient(150deg, #0b1220, #1b2440 56%, #312e81);
-  box-shadow: 0 26px 60px -30px rgba(24, 24, 92, 0.75);
-}
-
 .role-top {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -459,24 +449,6 @@ tr:focus-visible {
   box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.1);
 }
 
-.role-manager .role-icon {
-  background: rgba(255, 255, 255, 0.1);
-  color: #c7d2fe;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-}
-
-.role-index {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #98a2b3;
-}
-
-.role-manager .role-index {
-  color: rgba(199, 210, 254, 0.6);
-}
-
 .role-kicker {
   display: block;
   font-size: 10px;
@@ -484,10 +456,6 @@ tr:focus-visible {
   text-transform: uppercase;
   font-weight: 800;
   color: var(--muted);
-}
-
-.role-manager .role-kicker {
-  color: #a5b4fc;
 }
 
 .role-card h2 {
@@ -503,10 +471,6 @@ tr:focus-visible {
   max-width: 42ch;
 }
 
-.role-manager p {
-  color: #c3cde0;
-}
-
 .role-action {
   margin-top: 20px;
   display: flex;
@@ -516,10 +480,6 @@ tr:focus-visible {
   font-weight: 800;
   font-size: 13px;
   color: var(--brand);
-}
-
-.role-manager .role-action {
-  color: #fff;
 }
 
 .role-arrow {
@@ -533,22 +493,11 @@ tr:focus-visible {
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.role-manager .role-arrow {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .role-card:hover .role-arrow {
   transform: translateX(3px);
   background: var(--brand);
   border-color: var(--brand);
   color: #fff;
-}
-
-.role-manager:hover .role-arrow {
-  background: #fff;
-  border-color: #fff;
-  color: #312e81;
 }
 
 .feature-strip {
@@ -3343,7 +3292,10 @@ tr:focus-visible {
   }
 
   .role-cards {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
   }
 
   .client-grid {

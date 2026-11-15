@@ -27,7 +27,7 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
               <button
                 type="button"
                 className="btn btn-outline btn-lg"
-                onClick={() => onNavigate('admin')}
+                onClick={() => onNavigate('manager')}
               >
                 <Bank size={16} /> Manager console
               </button>
@@ -75,7 +75,7 @@ export function LandingPage({ onNavigate }: { onNavigate: (view: View) => void }
             <button
               type="button"
               className="role-card role-manager"
-              onClick={() => onNavigate('admin')}
+              onClick={() => onNavigate('manager')}
             >
               <span className="role-top">
                 <span className="role-icon">

@@ -1,63 +1,99 @@
 import { useEffect, useState } from 'react';
 import type { ManagerSession } from './auth';
 import { getManagerSession, signOutManager } from './auth';
-import { Header } from './components/Header';
+import { PublicHeader } from './components/PublicHeader';
+import { ClientHeader } from './components/ClientHeader';
+import { ManagerHeader } from './components/ManagerHeader';
 import { LandingPage } from './pages/LandingPage';
 import { ClientPage } from './pages/ClientPage';
 import { AdminPage } from './pages/AdminPage';
 import { ManagerLoginPage } from './pages/ManagerLoginPage';
 
-export type View = 'landing' | 'client' | 'admin';
+export type View = 'landing' | 'client' | 'manager';
 
-function viewFromHash(): View {
-  const hash = window.location.hash.replace('#', '');
-  return hash === 'client' || hash === 'admin' ? hash : 'landing';
+const PATHS: Record<View, string> = {
+  landing: '/',
+  client: '/client',
+  manager: '/manager',
+};
+
+function viewFromPath(): View {
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/client') return 'client';
+  if (path === '/manager' || path === '/admin') return 'manager';
+  return 'landing';
 }
 
 export default function App() {
-  const [view, setView] = useState<View>(viewFromHash);
+  const [view, setView] = useState<View>(viewFromPath);
   const [manager, setManager] = useState<ManagerSession | null>(() => getManagerSession());
 
   useEffect(() => {
-    const onHashChange = () => setView(viewFromHash());
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    // Keep old hash links working and redirect /admin to /manager.
+    const legacyHash = window.location.hash.replace('#', '');
+    if (legacyHash === 'client' || legacyHash === 'admin') {
+      const next: View = legacyHash === 'client' ? 'client' : 'manager';
+      window.history.replaceState(null, '', PATHS[next]);
+      setView(next);
+    } else if (window.location.pathname.replace(/\/+$/, '') === '/admin') {
+      window.history.replaceState(null, '', PATHS.manager);
+      setView('manager');
+    }
+
+    const onPopState = () => setView(viewFromPath());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
   function navigate(next: View) {
     setView(next);
-    const url = next === 'landing' ? window.location.pathname : `${window.location.pathname}#${next}`;
-    window.history.replaceState(null, '', url);
+    if (window.location.pathname !== PATHS[next]) {
+      window.history.pushState(null, '', PATHS[next]);
+    }
     window.scrollTo({ top: 0 });
   }
 
   function handleSignIn(session: ManagerSession) {
     setManager(session);
-    navigate('admin');
+    navigate('manager');
   }
 
   function handleSignOut() {
     signOutManager();
     setManager(null);
-    navigate('admin');
+    navigate('manager');
   }
 
   return (
     <div className="app">
-      <Header
-        view={view}
-        onNavigate={navigate}
-        manager={manager}
-        onSignOut={handleSignOut}
-      />
-      {view === 'landing' && <LandingPage onNavigate={navigate} />}
-      {view === 'client' && <ClientPage />}
-      {view === 'admin' &&
-        (manager ? (
-          <AdminPage managerName={manager.name} />
-        ) : (
-          <ManagerLoginPage onSignIn={handleSignIn} />
-        ))}
+      {view === 'landing' && (
+        <>
+          <PublicHeader onHome={() => navigate('landing')} />
+          <LandingPage onNavigate={navigate} />
+        </>
+      )}
+
+      {view === 'client' && (
+        <>
+          <ClientHeader onHome={() => navigate('client')} />
+          <ClientPage />
+        </>
+      )}
+
+      {view === 'manager' && (
+        <>
+          <ManagerHeader
+            manager={manager}
+            onHome={() => navigate('manager')}
+            onSignOut={handleSignOut}
+          />
+          {manager ? (
+            <AdminPage managerName={manager.name} />
+          ) : (
+            <ManagerLoginPage onSignIn={handleSignIn} />
+          )}
+        </>
+      )}
     </div>
   );
 }

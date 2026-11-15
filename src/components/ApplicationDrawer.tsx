@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Field, TextArea, TextInput } from './Fields';
 import { DocumentViewer } from './DocumentViewer';
 import { AlertTriangle, Check, Close, Clock, Eye, FileText, ShieldCheck } from './Icons';
@@ -37,6 +37,7 @@ export function ApplicationDrawer({
   const [submitting, setSubmitting] = useState<'approved' | 'denied' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [viewingDocument, setViewingDocument] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const assessment = useMemo(() => assessLoan(application), [application]);
   const copy = recommendationCopy(assessment.recommendation);
@@ -44,15 +45,19 @@ export function ApplicationDrawer({
   const incomeDocument = application.incomeDocument;
 
   useEffect(() => {
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus({ preventScroll: true });
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus({ preventScroll: true });
     };
   }, [onClose]);
 
@@ -102,7 +107,13 @@ export function ApplicationDrawer({
                 </p>
               </div>
             </div>
-            <button type="button" className="icon-btn" onClick={onClose} aria-label="Close details">
+            <button
+              type="button"
+              ref={closeButtonRef}
+              className="icon-btn"
+              onClick={onClose}
+              aria-label="Close details"
+            >
               <Close size={17} />
             </button>
           </div>

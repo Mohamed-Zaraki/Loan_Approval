@@ -17,6 +17,12 @@ const PATHS: Record<View, string> = {
   manager: '/manager',
 };
 
+const TITLES: Record<View, string> = {
+  landing: 'LoanFlow — Loan approval platform',
+  client: 'Apply for a loan · LoanFlow',
+  manager: 'Manager console · LoanFlow',
+};
+
 function viewFromPath(): View {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   if (path === '/client') return 'client';
@@ -27,6 +33,10 @@ function viewFromPath(): View {
 export default function App() {
   const [view, setView] = useState<View>(viewFromPath);
   const [manager, setManager] = useState<ManagerSession | null>(() => getManagerSession());
+
+  useEffect(() => {
+    document.title = TITLES[view];
+  }, [view]);
 
   useEffect(() => {
     // Keep old hash links working and redirect /admin to /manager.
@@ -66,34 +76,39 @@ export default function App() {
 
   return (
     <div className="app">
-      {view === 'landing' && (
-        <>
-          <PublicHeader onHome={() => navigate('landing')} />
-          <LandingPage onNavigate={navigate} />
-        </>
-      )}
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+      <div id="main-content" tabIndex={-1}>
+        {view === 'landing' && (
+          <>
+            <PublicHeader onHome={() => navigate('landing')} />
+            <LandingPage onNavigate={navigate} />
+          </>
+        )}
 
-      {view === 'client' && (
-        <>
-          <ClientHeader onHome={() => navigate('client')} />
-          <ClientPage />
-        </>
-      )}
+        {view === 'client' && (
+          <>
+            <ClientHeader onHome={() => navigate('client')} />
+            <ClientPage />
+          </>
+        )}
 
-      {view === 'manager' && (
-        <>
-          <ManagerHeader
-            manager={manager}
-            onHome={() => navigate('manager')}
-            onSignOut={handleSignOut}
-          />
-          {manager ? (
-            <AdminPage managerName={manager.name} />
-          ) : (
-            <ManagerLoginPage onSignIn={handleSignIn} />
-          )}
-        </>
-      )}
+        {view === 'manager' && (
+          <>
+            <ManagerHeader
+              manager={manager}
+              onHome={() => navigate('manager')}
+              onSignOut={handleSignOut}
+            />
+            {manager ? (
+              <AdminPage managerName={manager.name} />
+            ) : (
+              <ManagerLoginPage onSignIn={handleSignIn} />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

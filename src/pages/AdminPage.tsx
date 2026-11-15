@@ -188,13 +188,12 @@ export function AdminPage({ managerName }: { managerName: string }) {
             )}
           </div>
 
-          <div className="filter-tabs" role="tablist" aria-label="Filter by status">
+          <div className="filter-tabs" role="group" aria-label="Filter by status">
             {FILTERS.map((filter) => (
               <button
                 key={filter.id}
                 type="button"
-                role="tab"
-                aria-selected={statusFilter === filter.id}
+                aria-pressed={statusFilter === filter.id}
                 className={`filter-tab ${statusFilter === filter.id ? 'active' : ''}`}
                 onClick={() => setStatusFilter(filter.id)}
               >

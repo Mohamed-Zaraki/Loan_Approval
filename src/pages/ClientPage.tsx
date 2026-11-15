@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { api } from '../api';
 import { DocumentUpload } from '../components/DocumentUpload';
 import { Field, MoneyInput, SelectInput, Switch, TextInput } from '../components/Fields';
@@ -275,6 +275,19 @@ export function ClientPage() {
     scrollToTop();
   }
 
+  function selectTab(next: 'apply' | 'track') {
+    setTab(next);
+    if (next === 'track') void refreshMine();
+  }
+
+  function handleTabKeyDown(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const next = tab === 'apply' ? 'track' : 'apply';
+    selectTab(next);
+    window.setTimeout(() => document.getElementById(`tab-${next}`)?.focus(), 0);
+  }
+
   return (
     <main className="page">
       <div className="container">
@@ -289,7 +302,7 @@ export function ClientPage() {
           </div>
           <div className="head-actions">
             <span className="secure-note">
-              <ShieldCheck size={15} /> Encrypted session
+              <ShieldCheck size={15} /> Applicant session
             </span>
           </div>
         </div>
@@ -297,33 +310,46 @@ export function ClientPage() {
         <div className="client-tabs" role="tablist" aria-label="Client portal sections">
           <button
             type="button"
+            id="tab-apply"
             role="tab"
             aria-selected={tab === 'apply'}
+            tabIndex={tab === 'apply' ? 0 : -1}
             className={`tab ${tab === 'apply' ? 'active' : ''}`}
-            onClick={() => setTab('apply')}
+            onClick={() => selectTab('apply')}
+            onKeyDown={handleTabKeyDown}
           >
             New application
           </button>
           <button
             type="button"
+            id="tab-track"
             role="tab"
             aria-selected={tab === 'track'}
+            tabIndex={tab === 'track' ? 0 : -1}
             className={`tab ${tab === 'track' ? 'active' : ''}`}
-            onClick={() => {
-              setTab('track');
-              void refreshMine();
-            }}
+            onClick={() => selectTab('track')}
+            onKeyDown={handleTabKeyDown}
           >
             My requests
             {mine.length > 0 && <span className="tab-count">{mine.length}</span>}
           </button>
         </div>
 
-        {tab === 'track' ? (
-          <MyRequests applications={mine} loading={mineLoading} onApply={startNew} />
-        ) : submitted ? (
-          <SuccessPanel application={submitted} onNew={startNew} onTrack={() => setTab('track')} />
-        ) : (
+        <div
+          className="client-tab-panel"
+          role="tabpanel"
+          id={`panel-${tab}`}
+          aria-labelledby={`tab-${tab}`}
+        >
+          {tab === 'track' ? (
+            <MyRequests applications={mine} loading={mineLoading} onApply={startNew} />
+          ) : submitted ? (
+            <SuccessPanel
+              application={submitted}
+              onNew={startNew}
+              onTrack={() => selectTab('track')}
+            />
+          ) : (
           <div className="client-grid">
             <section className="panel form-panel">
               <div className="stepper" aria-label={`Step ${step} of ${STEPS.length}`}>
@@ -664,7 +690,8 @@ export function ClientPage() {
               <SummaryCard form={form} assessment={assessment} />
             </aside>
           </div>
-        )}
+          )}
+        </div>
       </div>
 
       <Toast toast={toast} onClose={dismiss} />

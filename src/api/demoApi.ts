@@ -441,7 +441,7 @@ export const demoApi = {
         status: input.status,
         reason: input.reason,
         decisionDate: new Date().toISOString(),
-        managerName: input.managerName,
+        managerName: 'M. Laurent',
       },
     };
 

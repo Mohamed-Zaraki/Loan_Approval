@@ -39,9 +39,9 @@ export function Header({ view, onNavigate, manager, onSignOut }: HeaderProps) {
           </button>
           <button
             type="button"
-            className={`nav-link ${view === 'admin' ? 'active' : ''}`}
-            onClick={() => onNavigate('admin')}
-            aria-current={view === 'admin' ? 'page' : undefined}
+            className={`nav-link ${view === 'manager' ? 'active' : ''}`}
+            onClick={() => onNavigate('manager')}
+            aria-current={view === 'manager' ? 'page' : undefined}
           >
             Manager console
           </button>

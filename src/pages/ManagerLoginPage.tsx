@@ -34,12 +34,6 @@ export function ManagerLoginPage({
     setError(null);
     setSubmitting(true);
 
-<<<<<<< HEAD
-=======
-    // Small delay to mirror a network round trip.
-    await new Promise((resolve) => window.setTimeout(resolve, 450));
-
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
     try {
       const session = await signInManager(email, password);
       onSignIn(session);
@@ -105,11 +99,7 @@ export function ManagerLoginPage({
 
           <div className="login-aside-note">
             <ShieldCheck size={16} />
-<<<<<<< HEAD
             <span>Manager access is verified by the LoanFlow database API.</span>
-=======
-            <span>Your session ends when you sign out. Use manager access on trusted devices only.</span>
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
           </div>
         </aside>
 
@@ -179,14 +169,11 @@ export function ManagerLoginPage({
               )}
             </button>
           </form>
-<<<<<<< HEAD
 
           <p className="login-footnote">
             <ShieldCheck size={13} /> Your manager account is stored in the database; passwords are
             verified by the backend.
           </p>
-=======
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
         </section>
       </div>
     </main>

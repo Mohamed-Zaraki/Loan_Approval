@@ -31,14 +31,9 @@ function viewFromPath(): View {
 }
 
 export default function App() {
-<<<<<<< HEAD
-  const [view, setView] = useState<View>(viewFromHash);
+  const [view, setView] = useState<View>(viewFromPath);
   const [manager, setManager] = useState<ManagerSession | null>(null);
   const [managerLoading, setManagerLoading] = useState(true);
-=======
-  const [view, setView] = useState<View>(viewFromPath);
-  const [manager, setManager] = useState<ManagerSession | null>(() => getManagerSession());
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
 
   useEffect(() => {
     document.title = TITLES[view];
@@ -86,7 +81,6 @@ export default function App() {
     navigate('manager');
   }
 
-<<<<<<< HEAD
   async function handleSignOut() {
     try {
       await signOutManager();
@@ -94,36 +88,12 @@ export default function App() {
       // Clear the local view even if the API is temporarily unavailable.
     } finally {
       setManager(null);
-      navigate('admin');
+      navigate('manager');
     }
-=======
-  function handleSignOut() {
-    signOutManager();
-    setManager(null);
-    navigate('manager');
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
   }
 
   return (
     <div className="app">
-<<<<<<< HEAD
-      <Header
-        view={view}
-        onNavigate={navigate}
-        manager={manager}
-        onSignOut={handleSignOut}
-      />
-      {view === 'landing' && <LandingPage onNavigate={navigate} />}
-      {view === 'client' && <ClientPage />}
-      {view === 'admin' &&
-        (managerLoading ? (
-          <main className="page"><div className="container loading-panel"><span className="spinner" /> Checking manager session…</div></main>
-        ) : manager ? (
-          <AdminPage />
-        ) : (
-          <ManagerLoginPage onSignIn={handleSignIn} />
-        ))}
-=======
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -149,15 +119,20 @@ export default function App() {
               onHome={() => navigate('manager')}
               onSignOut={handleSignOut}
             />
-            {manager ? (
-              <AdminPage managerName={manager.name} />
+            {managerLoading ? (
+              <main className="page">
+                <div className="container loading-panel">
+                  <span className="spinner" /> Checking manager session…
+                </div>
+              </main>
+            ) : manager ? (
+              <AdminPage />
             ) : (
               <ManagerLoginPage onSignIn={handleSignIn} />
             )}
           </>
         )}
       </div>
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
     </div>
   );
 }

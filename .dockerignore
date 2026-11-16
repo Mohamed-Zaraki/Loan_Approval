@@ -1,0 +1,13 @@
+.git
+.gitignore
+node_modules
+dist
+dist-ssr
+backend/.venv
+**/__pycache__
+**/*.pyc
+.env
+backend/.env
+*.log
+docs
+UML_Model_Loan_Approval.drawio

@@ -25,6 +25,7 @@ Copy-Item backend\.env.example backend\.env
 | `COOKIE_SECURE` | production | `true` | Sends the session cookie over HTTPS only. Keep `false` for local HTTP. |
 | `COOKIE_SAMESITE` | no | `lax` | `lax` for same-origin (default), `none` when the frontend is on another domain (requires `COOKIE_SECURE=true`), `strict` for maximum isolation. |
 | `CORS_ORIGINS` | only for split origins | `https://loanflow.example.com` | Comma-separated browser origins allowed to call the API. Unused when FastAPI serves the frontend itself. |
+| `FRONTEND_DIST` | only for single origin | `/app/dist` | Folder containing the built frontend. Defaults to the project `dist/` next to `backend/`; when `index.html` exists there, FastAPI serves the SPA and the API on the same origin. |
 
 Generate a secret:
 
@@ -51,8 +52,11 @@ origins, `VITE_API_URL` must be the absolute API URL and the backend
 2. Set `AUTH_SECRET_KEY` to a fresh random value of at least 32 characters.
 3. Set `COOKIE_SECURE=true` on any HTTPS deployment.
 4. Choose one deployment shape:
-   - **Single origin (recommended):** FastAPI serves the built frontend; keep
-     `VITE_API_URL=/api`, `COOKIE_SAMESITE=lax`; CORS is not needed.
+   - **Single origin (recommended):** run `npm run build` so `dist/index.html`
+     exists (or point `FRONTEND_DIST` at it). FastAPI then serves the SPA,
+     `/assets` and the API on one origin; keep `VITE_API_URL=/api` and
+     `COOKIE_SAMESITE=lax`; CORS is not needed. Deep links such as `/manager`
+     fall back to `index.html`.
    - **Split origins:** frontend on its own host; set an absolute
      `VITE_API_URL`, `COOKIE_SAMESITE=none`, `COOKIE_SECURE=true`, and add the
      frontend origin to `CORS_ORIGINS`.

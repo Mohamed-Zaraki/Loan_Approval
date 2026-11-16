@@ -74,6 +74,13 @@ npm run build
 npm run preview
 ```
 
+For a single-origin deployment, build the frontend and then run the API: when
+`dist/index.html` exists, FastAPI serves the SPA and `/api` from the same port
+(override the folder with `FRONTEND_DIST`). Deep links like `/manager` and
+`/client` fall back to `index.html`, and the session cookie keeps working
+because there is no cross-origin request. See
+[docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+
 ## MySQL database
 
 `sql/schema.sql` defines `loan_approval_db`, and `sql/seed.sql` loads 30 example applications

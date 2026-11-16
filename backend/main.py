@@ -3,6 +3,7 @@
 import os
 import re
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Literal
 
 import jwt
@@ -10,6 +11,8 @@ import mysql.connector
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from pwdlib import PasswordHash
 from pwdlib.exceptions import UnknownHashError
@@ -473,3 +476,41 @@ def decide_application(
     finally:
         if connection and connection.is_connected():
             connection.close()
+
+
+# ---------------------------------------------------------------------------
+# Production: serve the built React app from the same origin as /api.
+# In development dist/ usually does not exist, and the API runs on its own.
+# ---------------------------------------------------------------------------
+
+
+def frontend_dist() -> Path:
+    configured = os.getenv("FRONTEND_DIST", "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    return Path(__file__).resolve().parent.parent / "dist"
+
+
+def mount_frontend() -> None:
+    dist = frontend_dist()
+    index_file = dist / "index.html"
+    if not index_file.is_file():
+        return
+
+    assets = dist / "assets"
+    if assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    def serve_spa(full_path: str):
+        # Unknown API paths must stay JSON 404s, not the HTML shell.
+        if full_path == "api" or full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not found.")
+
+        candidate = (dist / full_path).resolve()
+        if dist in candidate.parents and candidate.is_file():
+            return FileResponse(candidate)
+        return FileResponse(index_file)
+
+
+mount_frontend()

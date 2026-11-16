@@ -53,7 +53,7 @@ CREATE TABLE `applicants` (
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    CONSTRAINT `chk_applicant_age` CHECK (`age` >= 18),
+    CONSTRAINT `chk_applicant_age` CHECK (`age` BETWEEN 18 AND 120),
     CONSTRAINT `chk_applicant_children` CHECK (`number_of_children` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

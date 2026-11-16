@@ -83,6 +83,12 @@ The schema, data dictionary, distributions, data-quality notes and intended use 
 [docs/DATASET_DESCRIPTION.md](docs/DATASET_DESCRIPTION.md), with a printable
 [docs/LoanFlow-Dataset-Description.pdf](docs/LoanFlow-Dataset-Description.pdf).
 
+## Configuration
+
+Environment variables, secrets and production settings are documented in
+[docs/CONFIGURATION.md](docs/CONFIGURATION.md). Copy `.env.example` and
+`backend/.env.example` to `.env` / `backend/.env` before running.
+
 ## Run the database API
 
 The frontend calls the FastAPI service in `backend/`; the service reads and writes the MySQL

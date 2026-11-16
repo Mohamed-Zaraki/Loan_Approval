@@ -16,12 +16,29 @@ from pwdlib.exceptions import UnknownHashError
 
 load_dotenv()
 
+DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+
+
+def cors_origins() -> list[str]:
+    """Parse CORS_ORIGINS, trimming spaces and ignoring empty entries."""
+    raw = os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)
+    origins = [origin.strip() for origin in raw.split(",") if origin.strip()]
+    return origins or DEFAULT_CORS_ORIGINS.split(",")
+
+
+def cookie_secure() -> bool:
+    return os.getenv("COOKIE_SECURE", "false").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def cookie_samesite() -> Literal["lax", "strict", "none"]:
+    value = os.getenv("COOKIE_SAMESITE", "lax").strip().lower()
+    return value if value in {"lax", "strict", "none"} else "lax"
+
+
 app = FastAPI(title="LoanFlow API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv(
-        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
-    ).split(","),
+    allow_origins=cors_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
@@ -87,7 +104,13 @@ SESSION_HOURS = 8
 def auth_secret() -> str:
     secret = os.getenv("AUTH_SECRET_KEY", "")
     if len(secret) < 32:
-        raise HTTPException(status_code=503, detail="Manager authentication is not configured.")
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Manager authentication is not configured: set AUTH_SECRET_KEY "
+                "to at least 32 characters (see backend/.env.example)."
+            ),
+        )
     return secret
 
 
@@ -253,8 +276,8 @@ def login_manager(payload: ManagerLoginIn, response: Response):
             value=token,
             max_age=SESSION_HOURS * 60 * 60,
             httponly=True,
-            secure=os.getenv("COOKIE_SECURE", "false").lower() == "true",
-            samesite="lax",
+            secure=cookie_secure(),
+            samesite=cookie_samesite(),
             path="/api",
         )
         return manager_session(manager["manager_id"], manager["email"], manager["name"])
@@ -274,7 +297,13 @@ def get_manager_session(manager: dict = Depends(current_manager)):
 
 @app.post("/api/auth/logout", status_code=204)
 def logout_manager(response: Response):
-    response.delete_cookie(key=SESSION_COOKIE, path="/api", httponly=True, samesite="lax")
+    response.delete_cookie(
+        key=SESSION_COOKIE,
+        path="/api",
+        httponly=True,
+        secure=cookie_secure(),
+        samesite=cookie_samesite(),
+    )
 
 
 @app.get("/api/applications")

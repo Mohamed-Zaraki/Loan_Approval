@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { IncomeDocument } from '../types';
 import {
   dataUrlToBlob,
@@ -20,6 +20,7 @@ interface DocumentViewerProps {
  */
 export function DocumentViewer({ document: incomeDocument, onClose }: DocumentViewerProps) {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const isImage = isImageDocument(incomeDocument);
 
   useEffect(() => {
@@ -31,11 +32,17 @@ export function DocumentViewer({ document: incomeDocument, onClose }: DocumentVi
   }, [incomeDocument]);
 
   useEffect(() => {
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    closeButtonRef.current?.focus({ preventScroll: true });
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      previouslyFocused?.focus({ preventScroll: true });
+    };
   }, [onClose]);
 
   return (
@@ -58,7 +65,13 @@ export function DocumentViewer({ document: incomeDocument, onClose }: DocumentVi
               {formatDateTime(incomeDocument.uploadedAt)}
             </span>
           </div>
-          <button type="button" className="icon-btn" onClick={onClose} aria-label="Close preview">
+          <button
+            type="button"
+            ref={closeButtonRef}
+            className="icon-btn"
+            onClick={onClose}
+            aria-label="Close preview"
+          >
             <Close size={17} />
           </button>
         </header>
@@ -74,7 +87,7 @@ export function DocumentViewer({ document: incomeDocument, onClose }: DocumentVi
               <iframe src={objectUrl} title={`Uploaded document: ${incomeDocument.name}`} />
             )
           ) : (
-            <p className="viewer-empty">This demo record has no stored file to preview.</p>
+            <p className="viewer-empty">This record has no stored file to preview.</p>
           )}
         </div>
 

@@ -81,7 +81,7 @@ export async function prepareIncomeDocument(file: File): Promise<IncomeDocument>
   if (isPdf) {
     if (file.size > MAX_STORED_PDF_BYTES) {
       throw new Error(
-        'For this browser demo, PDFs must be under 1.5 MB. Upload a compressed PDF or a photo of the document.',
+        'PDFs must be under 1.5 MB. Upload a compressed PDF or a photo of the document.',
       );
     }
 

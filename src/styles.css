@@ -128,6 +128,26 @@ tr:focus-visible {
   border: 0;
 }
 
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
 /* ---------- Header ---------- */
 
 .site-header {
@@ -188,36 +208,24 @@ tr:focus-visible {
   vertical-align: 1px;
 }
 
-.main-nav {
-  display: flex;
-  gap: 2px;
-  background: rgba(242, 244, 247, 0.9);
-  border: 1px solid rgba(11, 18, 32, 0.04);
-  padding: 4px;
-  border-radius: 13px;
-}
-
-.nav-link {
-  border: 0;
-  background: transparent;
-  padding: 7px 15px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #55617a;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-}
-
-.nav-link:hover {
-  color: var(--ink);
-}
-
-.nav-link.active {
+.portal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   background: #fff;
-  color: var(--ink);
-  box-shadow:
-    0 1px 2px rgba(11, 18, 32, 0.07),
-    0 4px 10px -6px rgba(11, 18, 32, 0.3);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #475467;
+  white-space: nowrap;
+}
+
+.portal-tag svg {
+  color: var(--brand);
 }
 
 .header-meta {
@@ -225,28 +233,6 @@ tr:focus-visible {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.mode-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #065f46;
-  background: var(--green-soft);
-  border: 1px solid #d1fadf;
-  padding: 5px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.mode-pill .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #12b76a;
-  box-shadow: 0 0 0 3px rgba(18, 183, 106, 0.15);
 }
 
 .header-divider {
@@ -465,19 +451,9 @@ tr:focus-visible {
   border-color: #d6d9f5;
 }
 
-.role-manager {
-  color: #fff;
-  background:
-    radial-gradient(380px 220px at 112% -14%, rgba(129, 140, 248, 0.5), transparent 62%),
-    radial-gradient(280px 200px at -10% 110%, rgba(6, 182, 212, 0.24), transparent 65%),
-    linear-gradient(150deg, #0b1220, #1b2440 56%, #312e81);
-  box-shadow: 0 26px 60px -30px rgba(24, 24, 92, 0.75);
-}
-
 .role-top {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -493,24 +469,6 @@ tr:focus-visible {
   box-shadow: inset 0 0 0 1px rgba(79, 70, 229, 0.1);
 }
 
-.role-manager .role-icon {
-  background: rgba(255, 255, 255, 0.1);
-  color: #c7d2fe;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-}
-
-.role-index {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #98a2b3;
-}
-
-.role-manager .role-index {
-  color: rgba(199, 210, 254, 0.6);
-}
-
 .role-kicker {
   display: block;
   font-size: 10px;
@@ -518,10 +476,6 @@ tr:focus-visible {
   text-transform: uppercase;
   font-weight: 800;
   color: var(--muted);
-}
-
-.role-manager .role-kicker {
-  color: #a5b4fc;
 }
 
 .role-card h2 {
@@ -537,10 +491,6 @@ tr:focus-visible {
   max-width: 42ch;
 }
 
-.role-manager p {
-  color: #c3cde0;
-}
-
 .role-action {
   margin-top: 20px;
   display: flex;
@@ -550,10 +500,6 @@ tr:focus-visible {
   font-weight: 800;
   font-size: 13px;
   color: var(--brand);
-}
-
-.role-manager .role-action {
-  color: #fff;
 }
 
 .role-arrow {
@@ -567,22 +513,11 @@ tr:focus-visible {
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.role-manager .role-arrow {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .role-card:hover .role-arrow {
   transform: translateX(3px);
   background: var(--brand);
   border-color: var(--brand);
   color: #fff;
-}
-
-.role-manager:hover .role-arrow {
-  background: #fff;
-  border-color: #fff;
-  color: #312e81;
 }
 
 .feature-strip {
@@ -1832,7 +1767,7 @@ tr:focus-visible {
   display: flex;
   justify-content: space-between;
   font-size: 9.5px;
-  color: #98a2b3;
+  color: #667085;
 }
 
 .checklist h4 {
@@ -1908,7 +1843,7 @@ tr:focus-visible {
 .disclaimer {
   font-size: 10px;
   line-height: 1.5;
-  color: #98a2b3;
+  color: #667085;
   margin-top: 16px;
   border-top: 1px solid var(--line);
   padding-top: 12px;
@@ -2051,7 +1986,7 @@ tr:focus-visible {
   gap: 7px;
   font-size: 11px;
   font-weight: 700;
-  color: #98a2b3;
+  color: #667085;
   white-space: nowrap;
 }
 
@@ -3360,6 +3295,7 @@ tr:focus-visible {
   background: var(--brand-soft);
 }
 
+<<<<<<< HEAD
 .login-footnote {
   display: flex;
   align-items: flex-start;
@@ -3375,6 +3311,8 @@ tr:focus-visible {
   margin-top: 1px;
 }
 
+=======
+>>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
 .btn-block {
   width: 100%;
 }
@@ -3392,7 +3330,10 @@ tr:focus-visible {
   }
 
   .role-cards {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
   }
 
   .client-grid {
@@ -3524,19 +3465,6 @@ tr:focus-visible {
     font-size: 17px;
   }
 
-  .main-nav {
-    margin-left: auto;
-  }
-
-  .nav-link {
-    padding: 6px 9px;
-    font-size: 11.5px;
-  }
-
-  .mode-pill {
-    display: none;
-  }
-
   .header-meta {
     gap: 8px;
   }
@@ -3609,6 +3537,10 @@ tr:focus-visible {
 
   .step-label {
     display: none;
+  }
+
+  .step.active .step-label {
+    display: block;
   }
 
   .step-line {
@@ -3700,18 +3632,30 @@ tr:focus-visible {
   }
 
   .filter-tabs {
-    flex: 1;
+    flex: 1 1 100%;
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .filter-tab {
-    flex: 1;
+    flex: 0 0 auto;
     justify-content: center;
     white-space: nowrap;
+    padding: 6px 8px;
   }
 
   .sort-select {
-    margin-left: auto;
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sort-select select {
+    flex: 1;
   }
 
   .drawer {
@@ -3745,11 +3689,6 @@ tr:focus-visible {
 
   .header-inner {
     gap: 10px;
-  }
-
-  .nav-link {
-    padding: 6px 8px;
-    font-size: 11px;
   }
 
   .header-user .avatar {

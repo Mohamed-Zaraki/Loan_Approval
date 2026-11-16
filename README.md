@@ -81,6 +81,20 @@ For a single-origin deployment, build the frontend and then run the API: when
 because there is no cross-origin request. See
 [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
+### Docker / Railway
+
+`Dockerfile` builds the frontend and backend into one image, and `railway.json`
+sets the healthcheck to `/api/health`:
+
+```powershell
+docker build -t loanflow .
+docker run --rm -p 8080:8080 --env-file backend\.env loanflow
+```
+
+On Railway, create a service from the repository; it builds this Dockerfile and
+reads the `DB_*`, `AUTH_SECRET_KEY`, `COOKIE_SECURE` and `COOKIE_SAMESITE`
+variables from the service settings.
+
 ## MySQL database
 
 `sql/schema.sql` defines `loan_approval_db`, and `sql/seed.sql` loads 30 example applications

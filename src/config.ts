@@ -26,7 +26,12 @@ export const DOCUMENT_IMAGE_MAX_EDGE = 1600;
 export const POLICY = {
   minAge: 18,
   maxAge: 70,
-  maxValidationAge: 75,
+  /**
+   * Hard input limit: human ages above this are impossible, so the form and
+   * API reject them outright. Ages between maxAge (70) and this limit are
+   * accepted as input but fail the eligibility check instead.
+   */
+  maxValidationAge: 120,
   maxDebtRatio: 0.4,
   maxMissedPayments: 2,
   maxLoanToIncome: 36,

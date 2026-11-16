@@ -134,8 +134,13 @@ function validateStep(step: number, form: FormState): FormErrors {
     }
 
     const age = toNumber(form.age);
-    if (!form.age || age < POLICY.minAge || age > POLICY.maxValidationAge) {
-      errors.age = `Age must be between ${POLICY.minAge} and ${POLICY.maxValidationAge}.`;
+    if (
+      !form.age ||
+      !Number.isInteger(age) ||
+      age < POLICY.minAge ||
+      age > POLICY.maxValidationAge
+    ) {
+      errors.age = `Enter a whole-number age between ${POLICY.minAge} and ${POLICY.maxValidationAge}.`;
     }
 
     if (!form.job.trim()) errors.job = 'Enter the applicant’s occupation.';
@@ -457,10 +462,15 @@ export function ClientPage() {
                           type="number"
                           min={POLICY.minAge}
                           max={POLICY.maxValidationAge}
+                          step={1}
+                          inputMode="numeric"
+                          maxLength={3}
                           placeholder="e.g. 34"
                           value={form.age}
                           invalid={Boolean(errors.age)}
-                          onChange={(event) => update('age', event.target.value)}
+                          onChange={(event) =>
+                            update('age', event.target.value.replace(/\D/g, '').slice(0, 3))
+                          }
                         />
                       </Field>
 

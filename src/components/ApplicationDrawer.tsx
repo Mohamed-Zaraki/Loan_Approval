@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { useEffect, useMemo, useState } from 'react';
-import { Field, TextArea } from './Fields';
-=======
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Field, TextArea, TextInput } from './Fields';
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
+import { Field, TextArea } from './Fields';
 import { DocumentViewer } from './DocumentViewer';
 import { AlertTriangle, Check, Close, Clock, Eye, FileText, ShieldCheck } from './Icons';
 import { StatusBadge } from './StatusBadge';

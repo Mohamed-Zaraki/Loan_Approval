@@ -3295,7 +3295,6 @@ tr:focus-visible {
   background: var(--brand-soft);
 }
 
-<<<<<<< HEAD
 .login-footnote {
   display: flex;
   align-items: flex-start;
@@ -3311,8 +3310,6 @@ tr:focus-visible {
   margin-top: 1px;
 }
 
-=======
->>>>>>> 8e86fe8da14e2e5d377795a55126b1d5c761c930
 .btn-block {
   width: 100%;
 }

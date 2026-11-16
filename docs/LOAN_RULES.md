@@ -81,7 +81,7 @@ These prevent an invalid file from being created; they are not credit rules.
 | --- | --- |
 | Full name | At least 3 characters |
 | National ID (CNIB) | Exactly 18 digits, not all zeros |
-| Age | 18–75 at the form level (`maxValidationAge`); approval only accepts ≤ 70 |
+| Age | 18–120 at the form level (`maxValidationAge`); approval only accepts ≤ 70 |
 | Occupation | Required |
 | Children | Integer, 0–20 |
 | Monthly income | Greater than 0 |

@@ -12,6 +12,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pwdlib import PasswordHash
+from pwdlib.exceptions import UnknownHashError
 
 load_dotenv()
 
@@ -40,7 +41,7 @@ def connect():
 class ApplicantIn(BaseModel):
     fullName: str = Field(min_length=3, max_length=150)
     idCardNumber: str = Field(min_length=1, max_length=50)
-    age: int = Field(ge=18, le=75)
+    age: int = Field(ge=18, le=120)
     job: str = Field(max_length=100)
     hasCDI: bool
     isMarried: bool
@@ -227,9 +228,18 @@ def login_manager(payload: ManagerLoginIn, response: Response):
             (payload.email.strip().lower(),),
         )
         manager = cursor.fetchone()
-        if not manager or not manager["password_hash"] or not password_hasher.verify(
-            payload.password, manager["password_hash"]
-        ):
+        password_ok = False
+        if manager and manager["password_hash"]:
+            try:
+                password_ok = password_hasher.verify(
+                    payload.password, manager["password_hash"]
+                )
+            except UnknownHashError:
+                # The column does not contain an Argon2id hash (for example a
+                # plain-text password was inserted by hand). Treat it as a
+                # failed login instead of returning a 500 error.
+                password_ok = False
+        if not password_ok:
             raise HTTPException(status_code=401, detail="Incorrect email or password.")
 
         expires = datetime.now(timezone.utc) + timedelta(hours=SESSION_HOURS)

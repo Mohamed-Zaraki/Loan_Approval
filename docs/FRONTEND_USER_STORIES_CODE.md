@@ -48,32 +48,9 @@ The manager route renders the console only when a session exists; otherwise the 
   );
 ```
 
-### `src/auth.ts` — lines 39–58
+### Manager authentication
 
-Demo sign-in: checks the credentials and stores the manager session in sessionStorage.
-
-```ts
-export function signInManager(email: string, password: string): ManagerSession {
-  const normalizedEmail = email.trim().toLowerCase();
-  if (normalizedEmail !== DEMO_MANAGER.email || password !== DEMO_MANAGER.password) {
-    throw new Error('Incorrect email or password.');
-  }
-
-  const session: ManagerSession = {
-    email: DEMO_MANAGER.email,
-    name: DEMO_MANAGER.name,
-    signedInAt: new Date().toISOString(),
-  };
-
-  try {
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch {
-    // Session storage can be unavailable; the in-memory session still works.
-  }
-
-  return session;
-}
-```
+src/auth.ts delegates sign-in and session checks to the REST API. FastAPI verifies passwords against Argon2id hashes in MySQL and sets an HTTP-only session cookie.
 
 ### `src/pages/AdminPage.tsx` — lines 69–103
 

@@ -16,12 +16,25 @@ function viewFromHash(): View {
 
 export default function App() {
   const [view, setView] = useState<View>(viewFromHash);
-  const [manager, setManager] = useState<ManagerSession | null>(() => getManagerSession());
+  const [manager, setManager] = useState<ManagerSession | null>(null);
+  const [managerLoading, setManagerLoading] = useState(true);
 
   useEffect(() => {
     const onHashChange = () => setView(viewFromHash());
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void getManagerSession().then((session) => {
+      if (!active) return;
+      setManager(session);
+      setManagerLoading(false);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   function navigate(next: View) {
@@ -36,10 +49,15 @@ export default function App() {
     navigate('admin');
   }
 
-  function handleSignOut() {
-    signOutManager();
-    setManager(null);
-    navigate('admin');
+  async function handleSignOut() {
+    try {
+      await signOutManager();
+    } catch {
+      // Clear the local view even if the API is temporarily unavailable.
+    } finally {
+      setManager(null);
+      navigate('admin');
+    }
   }
 
   return (
@@ -53,8 +71,10 @@ export default function App() {
       {view === 'landing' && <LandingPage onNavigate={navigate} />}
       {view === 'client' && <ClientPage />}
       {view === 'admin' &&
-        (manager ? (
-          <AdminPage managerName={manager.name} />
+        (managerLoading ? (
+          <main className="page"><div className="container loading-panel"><span className="spinner" /> Checking manager session…</div></main>
+        ) : manager ? (
+          <AdminPage />
         ) : (
           <ManagerLoginPage onSignIn={handleSignIn} />
         ))}

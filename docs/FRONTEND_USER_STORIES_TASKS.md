@@ -30,7 +30,7 @@ The actual code excerpt for each task is in
 **What it does**
 
 - The manager console is gated behind the demo sign-in (`App.tsx` renders
-  `ManagerLoginPage` until a session exists in `sessionStorage` via `auth.ts`).
+  `ManagerLoginPage` until a the backend confirms the manager session through `auth.ts`).
 - `AdminPage.tsx` loads the queue with `api.listApplications()` and shows four KPI cards
   (pending, approved, denied, total requested volume) computed in `stats`.
 - The same page filters by status (`all / pending / approved / denied`) and by free text over

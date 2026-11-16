@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Field, TextArea, TextInput } from './Fields';
+import { Field, TextArea } from './Fields';
 import { DocumentViewer } from './DocumentViewer';
 import { AlertTriangle, Check, Close, Clock, Eye, FileText, ShieldCheck } from './Icons';
 import { StatusBadge } from './StatusBadge';
@@ -21,19 +21,16 @@ import {
 
 interface ApplicationDrawerProps {
   application: LoanApplication;
-  managerName: string;
   onClose: () => void;
   onDecide: (application: LoanApplication, input: DecisionInput) => Promise<LoanApplication>;
 }
 
 export function ApplicationDrawer({
   application,
-  managerName,
   onClose,
   onDecide,
 }: ApplicationDrawerProps) {
   const [reason, setReason] = useState('');
-  const [manager, setManager] = useState(managerName);
   const [submitting, setSubmitting] = useState<'approved' | 'denied' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [viewingDocument, setViewingDocument] = useState(false);
@@ -70,7 +67,6 @@ export function ApplicationDrawer({
       await onDecide(application, {
         status,
         reason: reason.trim() || 'The application meets the bank’s eligibility criteria.',
-        managerName: manager.trim() || 'Bank manager',
       });
     } catch (decisionError) {
       setError(decisionError instanceof Error ? decisionError.message : 'Could not save the decision.');
@@ -328,15 +324,6 @@ export function ApplicationDrawer({
 
             {pending ? (
               <div className="decision-form">
-                <Field label="Manager" htmlFor="managerName">
-                  <TextInput
-                    id="managerName"
-                    value={manager}
-                    onChange={(event) => setManager(event.target.value)}
-                    placeholder="Your name"
-                  />
-                </Field>
-
                 <Field
                   label="Decision reason"
                   htmlFor="decisionReason"

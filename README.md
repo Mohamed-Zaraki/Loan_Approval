@@ -11,8 +11,7 @@ It contains two interfaces:
   full application drawer, an eligibility assessment, and approve / deny actions with a
   documented reason.
 
-The app runs **out of the box with browser demo data**. When a Python API is available, set
-`VITE_API_URL` and the same UI talks to it over REST.
+The app connects to the LoanFlow MySQL database through the FastAPI service in `backend/`.
 
 ## Stack
 
@@ -22,8 +21,7 @@ The app runs **out of the box with browser demo data**. When a Python API is ava
 | Build tool | Vite 6 |
 | Styling | Hand-written CSS (no UI framework), Manrope font |
 | State | React hooks |
-| Persistence (demo) | `localStorage` |
-| Persistence (live) | Python API → MySQL |
+| Persistence | FastAPI → MySQL |
 
 ### Recommended Python backend
 
@@ -47,8 +45,9 @@ or `{ "application": ... }` / `{ "items": [...] }` envelopes, so the backend sha
 
 ### Windows — easiest
 
-Double-click **`start.bat`** in the project folder. It installs dependencies on first run,
-starts Vite and opens http://localhost:5173 in your browser.
+Double-click **`start.bat`** in the project folder. It starts the API and frontend in the
+background, checks the database connection, then opens http://127.0.0.1:5173 in your browser.
+Use **`stop.bat`** to stop the background servers started by the launcher.
 
 ### Terminal
 
@@ -75,40 +74,37 @@ npm run build
 npm run preview
 ```
 
-## Demo data
+## MySQL database
 
-Applications are stored in this browser's `localStorage`, so they survive a refresh and a
-server restart. Use **Reset demo data** in the manager console to restore the sample queue,
-or clear the browser storage for this site. Seeded applications include a generated sample
-PDF so managers can try the in-app document preview immediately.
-
-Demo manager login:
-
-- Email: `manager@loanflow.demo`
-- Password: `manager123`
-
-## Test database (MySQL)
-
-The repository also ships a fictional MySQL dataset for backend and SQL work: `sql/schema.sql`
-defines `loan_approval_db`, and `sql/seed.sql` loads 30 applications with 2 managers and 30
-decisions. It is separate from the browser demo data above.
+`sql/schema.sql` defines `loan_approval_db`, and `sql/seed.sql` loads 30 example applications
+with 2 managers and 30 decisions. The API reads and writes these same tables.
 
 The schema, data dictionary, distributions, data-quality notes and intended use are documented in
 [docs/DATASET_DESCRIPTION.md](docs/DATASET_DESCRIPTION.md), with a printable
 [docs/LoanFlow-Dataset-Description.pdf](docs/LoanFlow-Dataset-Description.pdf).
 
-## Connect the Python API
+## Run the database API
 
-1. Start the backend on `http://127.0.0.1:8000`.
-2. Copy `.env.example` to `.env` (the default `/api` uses the Vite proxy configured in
-   `vite.config.ts`, so no CORS setup is needed in development).
-3. Restart `npm run dev`.
+The frontend calls the FastAPI service in `backend/`; the service reads and writes the MySQL
+tables created by `sql/schema.sql`.
 
-To call the backend directly instead, set `VITE_API_URL=http://127.0.0.1:8000/api` and enable
-CORS in FastAPI for `http://localhost:5173`.
+1. For a fresh database, run `sql/schema.sql` in MySQL, then optionally run `sql/seed.sql` to
+   load the sample queue. If you already have the database, run `sql/migrate_api_columns.sql`;
+   do not rerun `schema.sql`, since it drops and recreates the tables.
+2. In `backend/`, create a virtual environment, install `requirements.txt`, and copy
+   `.env.example` to `.env`. Set `DB_USER` and `DB_PASSWORD` to your MySQL credentials. Set
+   `AUTH_SECRET_KEY` to a random secret of at least 32 characters.
+3. In the project root, copy `.env.example` to `.env` if it does not already exist.
+4. Create a manager account once by running `python create_manager.py` from `backend/`.
+   After setup, double-click `start.bat`; no terminal window needs to stay open.
 
-If `VITE_API_URL` is unset, the app stays in demo mode and the header shows a **Demo data**
-badge. Demo data can be restored from the manager console.
+For an existing database, run `sql/migrate_manager_auth.sql` once. Create a manager login from
+the `backend/` directory with `python create_manager.py`; the password is entered privately in
+the terminal and saved only as an Argon2id hash. The backend sets an HTTP-only session cookie,
+and the manager queue and decision endpoint require that session.
+
+The API contract is documented in [docs/API_CONTRACT.md](docs/API_CONTRACT.md). The SQL seed
+identity numbers are for the manager queue; new client submissions use the frontend CNIB checks.
 
 ## UML mapping
 
@@ -127,7 +123,7 @@ application has at most one decision, and the manager reviews applications and v
 
 ```text
 src/
-  api/                 demo API + HTTP API + shared interface
+  api/                 HTTP API + shared interface
   components/          header, fields, status badge, drawer, toast, icons
   pages/               landing, client portal, manager console
   utils/               loan calculations, formatting, document handling, local tracking
@@ -138,6 +134,8 @@ docs/API_CONTRACT.md                 REST contract for the Python backend
 docs/DATASET_DESCRIPTION.md          dataset description for the MySQL test data
 docs/FRONTEND_USER_STORIES_TASKS.md  user stories mapped to implementation tasks
 docs/FRONTEND_USER_STORIES_CODE.md   code excerpts for each task
+docs/AZURE_DEVOPS_BACKLOG.csv        Feature → User Story → Task import hierarchy
+docs/AZURE_DEVOPS_IMPORT.md          Azure Boards CSV import steps
 ```
 
 ## Decision rules used for the indicative assessment
@@ -160,10 +158,8 @@ The full rule set, scoring table, calculations and validation limits are documen
 
 ## Scope notes
 
-- The manager console is protected by a **frontend-only demo sign-in**:
-  `manager@loanflow.demo` / `manager123` (displayed on the login screen). The session lives in
-  `sessionStorage`, and the signed-in manager name prefills the decision form. Real
-  authentication must be enforced by the backend.
+- The manager console uses backend authentication with manager accounts stored in MySQL. Passwords
+  are stored as Argon2id hashes, and the backend requires a valid session for manager-only routes.
 - Client-side application tracking stores submitted IDs in `localStorage`. With a real backend,
   replace this with an authenticated “my applications” endpoint.
 - Interest rate and policy thresholds are constants (`src/config.ts`) — move them to the backend

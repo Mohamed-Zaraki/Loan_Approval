@@ -79,6 +79,24 @@ const EMPTY_FORM: FormState = {
 
 const STEPS = ['Applicant', 'Finances', 'Loan request'];
 
+const FIELD_LABELS: Record<keyof FormState, string> = {
+  fullName: 'full name',
+  idCardNumber: 'CNIB number',
+  age: 'age',
+  job: 'occupation',
+  hasCDI: 'employment status',
+  isMarried: 'marital status',
+  numberOfChildren: 'number of children',
+  monthlyIncome: 'monthly income',
+  totalDebt: 'existing monthly debt',
+  savings: 'savings',
+  incomeDocument: 'proof of income',
+  loanAmount: 'requested amount',
+  loanDuration: 'loan term',
+  loanPurpose: 'loan purpose',
+  missedPayments: 'missed payments',
+};
+
 function formToInput(form: FormState): LoanApplicationInput {
   return {
     applicant: {
@@ -243,11 +261,25 @@ export function ClientPage() {
       Object.keys(stepTwoErrors).length > 0 ||
       Object.keys(stepThreeErrors).length > 0
     ) {
+      const firstInvalidStep = Object.keys(stepOneErrors).length > 0
+        ? 1
+        : Object.keys(stepTwoErrors).length > 0
+          ? 2
+          : 3;
+      const firstInvalidErrors = [stepOneErrors, stepTwoErrors, stepThreeErrors][firstInvalidStep - 1];
+      const invalidFields = Object.keys({ ...stepOneErrors, ...stepTwoErrors, ...stepThreeErrors }) as (keyof FormState)[];
       setErrors({ ...stepOneErrors, ...stepTwoErrors, ...stepThreeErrors });
-      setStep(
-        Object.keys(stepOneErrors).length > 0 ? 1 : Object.keys(stepTwoErrors).length > 0 ? 2 : 3,
-      );
-      show('Some details are missing or invalid.', 'error');
+      setStep(firstInvalidStep);
+      const fieldNames = invalidFields.map((field) => FIELD_LABELS[field]);
+      show(`Please check: ${fieldNames.join(', ')}.`, 'error');
+      const firstField = Object.keys(firstInvalidErrors)[0];
+      if (firstField) {
+        window.setTimeout(() => {
+          const field = document.getElementById(firstField);
+          field?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          field?.focus({ preventScroll: true });
+        }, 0);
+      }
       return;
     }
 

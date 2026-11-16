@@ -62,7 +62,6 @@ export interface LoanApplication extends Omit<LoanApplicationInput, 'applicant'>
 export interface DecisionInput {
   status: DecisionStatus;
   reason: string;
-  managerName: string;
 }
 
 export interface EligibilityCheck {

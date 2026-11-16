@@ -65,6 +65,33 @@ origins, `VITE_API_URL` must be the absolute API URL and the backend
    `backend/set_manager_password.py`.
 6. Verify `GET /api/health` returns `{"status":"ok", ...}` before testing login.
 
+## Container image (Railway and Docker)
+
+The repository root contains a two-stage `Dockerfile`:
+
+1. `node:22-alpine` runs `npm ci` and `npm run build` to produce `dist/`.
+2. `python:3.13-slim` installs `backend/requirements.txt`, copies the backend and
+   the built `dist/`, and starts `uvicorn` on `$PORT` (default `8080`).
+
+Because FastAPI serves the SPA from the same origin, no separate frontend
+service or CORS configuration is required. `FRONTEND_DIST=/app/dist` is set in
+the image.
+
+`railway.json` tells Railway to build this Dockerfile and use `/api/health` as
+the deployment healthcheck. The service needs the backend variables above
+(`DB_*`, `AUTH_SECRET_KEY`, `COOKIE_SECURE`, `COOKIE_SAMESITE`); do not bake
+them into the image.
+
+Build and run locally:
+
+```powershell
+docker build -t loanflow .
+docker run --rm -p 8080:8080 --env-file backend\.env loanflow
+```
+
+Open http://localhost:8080. The container needs network access to MySQL; when
+the database runs on the host, set `DB_HOST=host.docker.internal`.
+
 ## Local development
 
 ```powershell

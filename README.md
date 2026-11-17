@@ -81,19 +81,32 @@ For a single-origin deployment, build the frontend and then run the API: when
 because there is no cross-origin request. See
 [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
-### Docker / Railway
+### Docker
 
-`Dockerfile` builds the frontend and backend into one image, and `railway.json`
-sets the healthcheck to `/api/health`:
+`Dockerfile` builds the frontend and backend into one image, listening on the
+port passed in `PORT` (8080 by default) and answering `/api/health`:
 
 ```powershell
 docker build -t loanflow .
 docker run --rm -p 8080:8080 --env-file backend\.env loanflow
 ```
 
-On Railway, create a service from the repository; it builds this Dockerfile and
-reads the `DB_*`, `AUTH_SECRET_KEY`, `COOKIE_SECURE` and `COOKIE_SAMESITE`
-variables from the service settings.
+### Azure App Service (deployment)
+
+`azure-pipelines.yml` builds this image, pushes it to Azure Container Registry and
+deploys it to a Web App for Containers. The pipeline reads its settings from the
+`loanflow-azure` variable group and runs on every push to `main`; pull requests
+only run the validation jobs (`npm ci`, `npm run build`, API byte-compile), so a
+failing check blocks the merge.
+
+```text
+Pipelines -> New pipeline -> Azure Repos Git -> loan_approval_web_app
+          -> Existing Azure Pipelines YAML file -> /azure-pipelines.yml
+```
+
+The Web App reads the `DB_*`, `AUTH_SECRET_KEY`, `COOKIE_SECURE` and
+`COOKIE_SAMESITE` variables from its App Service configuration. `railway.json` is
+kept from the earlier Railway step and is ignored by Azure.
 
 ## MySQL database
 
@@ -167,6 +180,10 @@ docs/FRONTEND_USER_STORIES_TASKS.md  user stories mapped to implementation tasks
 docs/FRONTEND_USER_STORIES_CODE.md   code excerpts for each task
 docs/AZURE_DEVOPS_BACKLOG.csv        Feature → User Story → Task import hierarchy
 docs/AZURE_DEVOPS_IMPORT.md          Azure Boards CSV import steps
+azure-pipelines.yml                  CI/CD: validate, push image to ACR, deploy to App Service
+sql/                                 schema, seed data and one-off migrations
+backend/                             FastAPI service serving the API and the built SPA
+Dockerfile                           multi-stage image (Vite build + uvicorn runtime)
 ```
 
 ## Decision rules used for the indicative assessment

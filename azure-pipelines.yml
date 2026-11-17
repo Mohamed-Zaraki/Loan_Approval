@@ -1,0 +1,139 @@
+# ===========================================================================
+# LoanFlow - build, push the container image and deploy to Azure App Service
+# ===========================================================================
+# One service connection (Azure Resource Manager) does everything: it logs the
+# agent into Azure Container Registry, pushes the image, and updates the Web
+# App. Keeping a single connection means there is exactly one secret store to
+# rotate.
+#
+# Required variable group (Pipelines -> Library -> "loanflow-azure"):
+#   AZURE_SERVICE_CONNECTION  name of the ARM service connection
+#   ACR_NAME                  registry name without the .azurecr.io suffix
+#   ACR_LOGIN_SERVER          <acr-name>.azurecr.io
+#   RESOURCE_GROUP            resource group holding the Web App
+#   WEBAPP_NAME               Web App name, i.e. <name>.azurewebsites.net
+#
+# The image is tagged with the build id and "latest", so a rollback is just a
+# redeploy of an older build id (see docs/AZURE_DEPLOYMENT.md).
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: loanflow-azure
+  - name: imageRepository
+    value: loanflow
+  - name: dockerfilePath
+    value: $(Build.SourcesDirectory)/Dockerfile
+  - name: imageTag
+    value: $(Build.BuildId)
+  - name: nodeVersion
+    value: 22.x
+  - name: pythonVersion
+    value: 3.13
+
+stages:
+  # -------------------------------------------------------------------------
+  # 1. Validation - runs for pull requests and for pushes to main.
+  # -------------------------------------------------------------------------
+  - stage: Validate
+    displayName: Validate
+    jobs:
+      - job: Frontend
+        displayName: Type-check and build the SPA
+        steps:
+          - task: NodeTool@0
+            displayName: Use Node $(nodeVersion)
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          - script: npm ci
+            displayName: Install dependencies
+
+          - script: npm run build
+            displayName: Build (tsc --noEmit + vite build)
+
+      - job: Backend
+        displayName: Check the API and its dependencies
+        steps:
+          - task: UsePythonVersion@0
+            displayName: Use Python $(pythonVersion)
+            inputs:
+              versionSpec: $(pythonVersion)
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r backend/requirements.txt
+            displayName: Install requirements
+
+          - script: python -m compileall -q backend
+            displayName: Byte-compile the API
+
+  # -------------------------------------------------------------------------
+  # 2. Build and push - main only, after validation passes.
+  # -------------------------------------------------------------------------
+  - stage: BuildAndPush
+    displayName: Build and push the image
+    dependsOn: Validate
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: Image
+        displayName: Docker build and push to ACR
+        steps:
+          - task: AzureCLI@2
+            displayName: Build and push
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -euo pipefail
+                az acr login --name "$(ACR_NAME)"
+
+                primary="$(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)"
+                latest="$(ACR_LOGIN_SERVER)/$(imageRepository):latest"
+
+                docker build --file "$(dockerfilePath)" --tag "$primary" "$(Build.SourcesDirectory)"
+                docker tag "$primary" "$latest"
+                docker push "$primary"
+                docker push "$latest"
+
+                echo "Pushed $primary"
+
+  # -------------------------------------------------------------------------
+  # 3. Deploy - updates the Web App to the image that was just pushed.
+  # -------------------------------------------------------------------------
+  - stage: Deploy
+    displayName: Deploy to App Service
+    dependsOn: BuildAndPush
+    condition: succeeded()
+    jobs:
+      - job: WebApp
+        displayName: Update the Web App container
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy $(imageRepository):$(imageTag)
+            inputs:
+              azureSubscription: $(AZURE_SERVICE_CONNECTION)
+              appName: $(WEBAPP_NAME)
+              resourceGroupName: $(RESOURCE_GROUP)
+              containers: $(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)
+
+          - script: |
+              set -euo pipefail
+              url="https://$(WEBAPP_NAME).azurewebsites.net/api/health"
+              echo "Waiting for $url"
+              curl --fail --silent --show-error \
+                   --retry 15 --retry-delay 10 --retry-all-errors \
+                   "$url"
+            displayName: Smoke test the health endpoint

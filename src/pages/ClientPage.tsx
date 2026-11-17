@@ -42,7 +42,7 @@ import { getRememberedApplicationIds, rememberApplication } from '../utils/stora
 interface FormState {
   fullName: string;
   idCardNumber: string;
-  age: string;
+  dateOfBirth: string;
   job: string;
   hasCDI: boolean;
   isMarried: boolean;
@@ -62,7 +62,7 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 const EMPTY_FORM: FormState = {
   fullName: '',
   idCardNumber: '',
-  age: '',
+  dateOfBirth: '',
   job: '',
   hasCDI: false,
   isMarried: false,
@@ -79,10 +79,41 @@ const EMPTY_FORM: FormState = {
 
 const STEPS = ['Applicant', 'Finances', 'Loan request'];
 
+function todayIsoDate(): string {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 10);
+}
+
+/** Latest selectable date of birth (today, in the local timezone). */
+const MAX_DATE_OF_BIRTH = todayIsoDate();
+
+/**
+ * Derives the applicant's age from a `YYYY-MM-DD` date of birth.
+ * Returns null when the value is empty, invalid, or in the future.
+ */
+function ageFromDateOfBirth(dateOfBirth: string): number | null {
+  if (!dateOfBirth) return null;
+
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(dob.getTime())) return null;
+
+  const today = new Date();
+  if (dob.getTime() > today.getTime()) return null;
+
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDelta = today.getMonth() - dob.getMonth();
+  if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < dob.getDate())) {
+    age -= 1;
+  }
+
+  return age;
+}
+
 const FIELD_LABELS: Record<keyof FormState, string> = {
   fullName: 'full name',
   idCardNumber: 'CNIB number',
-  age: 'age',
+  dateOfBirth: 'date of birth',
   job: 'occupation',
   hasCDI: 'employment status',
   isMarried: 'marital status',
@@ -102,7 +133,7 @@ function formToInput(form: FormState): LoanApplicationInput {
     applicant: {
       fullName: form.fullName.trim(),
       idCardNumber: form.idCardNumber.trim(),
-      age: toNumber(form.age),
+      age: ageFromDateOfBirth(form.dateOfBirth) ?? 0,
       job: form.job.trim(),
       hasCDI: form.hasCDI,
       isMarried: form.isMarried,
@@ -133,14 +164,15 @@ function validateStep(step: number, form: FormState): FormErrors {
       errors.idCardNumber = 'Enter the number printed on the ID card.';
     }
 
-    const age = toNumber(form.age);
-    if (
-      !form.age ||
-      !Number.isInteger(age) ||
-      age < POLICY.minAge ||
-      age > POLICY.maxValidationAge
-    ) {
-      errors.age = `Enter a whole-number age between ${POLICY.minAge} and ${POLICY.maxValidationAge}.`;
+    const age = ageFromDateOfBirth(form.dateOfBirth);
+    if (!form.dateOfBirth) {
+      errors.dateOfBirth = 'Enter the applicant’s date of birth.';
+    } else if (age === null) {
+      errors.dateOfBirth = 'Enter a valid date of birth.';
+    } else if (age < POLICY.minAge) {
+      errors.dateOfBirth = `Applicants must be at least ${POLICY.minAge} years old.`;
+    } else if (age > POLICY.maxValidationAge) {
+      errors.dateOfBirth = `Applicants must be ${POLICY.maxValidationAge} or younger.`;
     }
 
     if (!form.job.trim()) errors.job = 'Enter the applicant’s occupation.';
@@ -456,21 +488,20 @@ export function ClientPage() {
                         />
                       </Field>
 
-                      <Field label="Age" htmlFor="age" error={errors.age}>
+                      <Field
+                        label="Date of birth"
+                        htmlFor="dateOfBirth"
+                        error={errors.dateOfBirth}
+                        hint={`Applicants must be ${POLICY.minAge}–${POLICY.maxValidationAge} years old.`}
+                      >
                         <TextInput
-                          id="age"
-                          type="number"
-                          min={POLICY.minAge}
-                          max={POLICY.maxValidationAge}
-                          step={1}
-                          inputMode="numeric"
-                          maxLength={3}
-                          placeholder="e.g. 34"
-                          value={form.age}
-                          invalid={Boolean(errors.age)}
-                          onChange={(event) =>
-                            update('age', event.target.value.replace(/\D/g, '').slice(0, 3))
-                          }
+                          id="dateOfBirth"
+                          type="date"
+                          autoComplete="bday"
+                          max={MAX_DATE_OF_BIRTH}
+                          value={form.dateOfBirth}
+                          invalid={Boolean(errors.dateOfBirth)}
+                          onChange={(event) => update('dateOfBirth', event.target.value)}
                         />
                       </Field>
 

@@ -38,14 +38,14 @@ CREATE TABLE `bank_managers` (
 -- Represents: Applicant UML entity
 -- Attributes:
 --   applicantId (int), fullName (string), idCardNumber (string),
---   age (int), job (string), hasCDI (bool), isMarried (bool),
+--   dateOfBirth (date), job (string), hasCDI (bool), isMarried (bool),
 --   numberOfChildren (int)
 -- ------------------------------------------------------------------------
 CREATE TABLE `applicants` (
     `applicant_id` INT AUTO_INCREMENT PRIMARY KEY,
     `full_name` VARCHAR(150) NOT NULL,
     `id_card_number` VARCHAR(50) NOT NULL UNIQUE,
-    `age` INT NOT NULL,
+    `date_of_birth` DATE NOT NULL COMMENT 'Stored instead of an age so it never drifts',
     `job` VARCHAR(100) NULL,
     `has_cdi` BOOLEAN NOT NULL DEFAULT FALSE,
     `is_married` BOOLEAN NOT NULL DEFAULT FALSE,
@@ -53,7 +53,7 @@ CREATE TABLE `applicants` (
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
-    CONSTRAINT `chk_applicant_age` CHECK (`age` BETWEEN 18 AND 120),
+    CONSTRAINT `chk_applicant_dob` CHECK (`date_of_birth` >= '1900-01-01'),
     CONSTRAINT `chk_applicant_children` CHECK (`number_of_children` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

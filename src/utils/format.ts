@@ -50,6 +50,18 @@ export function formatDate(iso: string): string {
   return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);
 }
 
+/**
+ * Formats a plain `YYYY-MM-DD` value without the UTC shift that
+ * `new Date('YYYY-MM-DD')` causes in timezones behind UTC.
+ */
+export function formatIsoDate(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!match) return '—';
+  const [, year, month, day] = match;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);
+}
+
 export function formatDateTime(iso: string): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? '—' : dateTimeFormatter.format(date);

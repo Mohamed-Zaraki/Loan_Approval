@@ -13,7 +13,7 @@ If any of these fail, the recommendation becomes **High risk** and the UI recomm
 
 | # | Rule | Condition to pass | Source |
 | --- | --- | --- | --- |
-| 1 | Age within policy range | `18 ≤ age ≤ 70` | `POLICY.minAge` / `POLICY.maxAge` |
+| 1 | Age within policy range | `18 ≤ age ≤ 70` (age derived from `date_of_birth`) | `POLICY.minAge` / `POLICY.maxAge` |
 | 2 | Income verified | A proof-of-income document is attached | `incomeVerified` |
 | 3 | Debt-to-income within limit | `(existing debt + new monthly installment) / monthly income ≤ 40%` | `POLICY.maxDebtRatio` |
 | 4 | Repayment history | `missed payments in last 12 months ≤ 2` | `POLICY.maxMissedPayments` |
@@ -122,7 +122,7 @@ These prevent an invalid file from being created; they are not credit rules.
 | --- | --- |
 | Minimum age (approval) | 18 |
 | Maximum age (approval) | 70 |
-| Maximum age (form validation) | 75 |
+| Maximum age (form validation) | 120 |
 | Maximum debt-to-income | 40% |
 | Maximum missed payments | 2 |
 | Maximum loan-to-income | 36× |

@@ -75,7 +75,7 @@ The schema drops and recreates the four tables, then `seed.sql` re-inserts the s
 
 | Measure | Minimum | Maximum | Average |
 | --- | ---: | ---: | ---: |
-| Applicant age | 22 | 58 | 36.3 |
+| Applicant age (derived) | 22 | 58 | 36.3 |
 | Monthly income | €1,300 | €6,500 | €3,900 |
 | Existing monthly debt | €100 | €950 | €426.67 |
 | Savings | €300 | €45,000 | €14,223.33 |
@@ -160,7 +160,7 @@ Seeded values: `manager_id = 1` — Sarah Connor; `manager_id = 2` — Alexandre
 | `applicant_id` | `INT` | no | auto-increment | PK | Surrogate applicant identifier |
 | `full_name` | `VARCHAR(150)` | no | — | — | Applicant display name |
 | `id_card_number` | `VARCHAR(50)` | no | — | UNIQUE | National identity number (CNIB in the app) |
-| `age` | `INT` | no | — | `CHECK (age >= 18)` | Age in years at the time of the file |
+| `date_of_birth` | `DATE` | no | — | `CHECK (date_of_birth >= '1900-01-01')` | Date of birth; the applicant's age is derived from it |
 | `job` | `VARCHAR(100)` | yes | `NULL` | — | Occupation |
 | `has_cdi` | `BOOLEAN` | no | `FALSE` | — | Permanent employment contract (CDI) |
 | `is_married` | `BOOLEAN` | no | `FALSE` | — | Marital status |
@@ -168,7 +168,7 @@ Seeded values: `manager_id = 1` — Sarah Connor; `manager_id = 2` — Alexandre
 | `created_at` | `TIMESTAMP` | no | `CURRENT_TIMESTAMP` | — | Row creation time |
 | `updated_at` | `TIMESTAMP` | no | `CURRENT_TIMESTAMP ON UPDATE` | — | Last modification time |
 
-Semantics: `has_cdi = TRUE` means a permanent contract and drives the *stable employment* advisory check. `is_married` and `number_of_children` are descriptive only — they are not used by the eligibility engine.
+Semantics: `has_cdi = TRUE` means a permanent contract and drives the *stable employment* advisory check. `is_married` and `number_of_children` are descriptive only — they are not used by the eligibility engine. The API derives `age` from `date_of_birth` on every read, so the stored data never goes stale; the 18–120 input range is enforced when an application is submitted.
 
 ### 5.3 `loan_applications` — 30 rows
 
@@ -337,9 +337,9 @@ The seed uses 18- and 30-month durations. Both are valid under the policy (6–3
 
 **Impact:** the data is useful for API robustness tests, but those two files cannot be recreated through the UI.
 
-### 8.7 Age is stored, not derived
+### 8.7 The 18–120 range is enforced by the API, not by the database
 
-There is no date of birth. `age` is an integer snapshot, so it drifts over time, and the database only enforces `age >= 18` — not the policy maximum of 70. The seed’s range (22–58) happens to comply, but nothing prevents an out-of-policy row from being inserted later.
+`date_of_birth` is stored as a `DATE`, so it cannot drift, but MySQL `CHECK` constraints cannot call `CURDATE()`. The schema therefore only rejects a birth date before 1900 and a `NULL` value; the 18–120 input range and the 70-year approval policy are enforced by the API and the eligibility engine. A row inserted directly with SQL could still describe a minor.
 
 ### 8.8 Nullable fields that the UI requires
 

@@ -98,7 +98,10 @@ variables from the service settings.
 ## MySQL database
 
 `sql/schema.sql` defines `loan_approval_db`, and `sql/seed.sql` loads 30 example applications
-with 2 managers and 30 decisions. The API reads and writes these same tables.
+with 2 managers and 30 decisions. The API reads and writes these same tables. Applicants are
+stored with a `date_of_birth`; the API derives the age used by the 70-year approval policy.
+Existing databases created with the old `age` column can be updated once with
+`sql/migrate_date_of_birth.sql`.
 
 The schema, data dictionary, distributions, data-quality notes and intended use are documented in
 [docs/DATASET_DESCRIPTION.md](docs/DATASET_DESCRIPTION.md), with a printable
@@ -116,8 +119,9 @@ The frontend calls the FastAPI service in `backend/`; the service reads and writ
 tables created by `sql/schema.sql`.
 
 1. For a fresh database, run `sql/schema.sql` in MySQL, then optionally run `sql/seed.sql` to
-   load the sample queue. If you already have the database, run `sql/migrate_api_columns.sql`;
-   do not rerun `schema.sql`, since it drops and recreates the tables.
+   load the sample queue. If you already have the database, run `sql/migrate_api_columns.sql`
+   and `sql/migrate_date_of_birth.sql`; do not rerun `schema.sql`, since it drops and recreates
+   the tables.
 2. In `backend/`, create a virtual environment, install `requirements.txt`, and copy
    `.env.example` to `.env`. Set `DB_USER` and `DB_PASSWORD` to your MySQL credentials. Set
    `AUTH_SECRET_KEY` to a random secret of at least 32 characters.

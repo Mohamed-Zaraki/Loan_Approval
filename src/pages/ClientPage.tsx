@@ -133,6 +133,7 @@ function formToInput(form: FormState): LoanApplicationInput {
     applicant: {
       fullName: form.fullName.trim(),
       idCardNumber: form.idCardNumber.trim(),
+      dateOfBirth: form.dateOfBirth,
       age: ageFromDateOfBirth(form.dateOfBirth) ?? 0,
       job: form.job.trim(),
       hasCDI: form.hasCDI,

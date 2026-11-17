@@ -5,6 +5,12 @@ export type Recommendation = 'strong' | 'review' | 'high-risk';
 export interface ApplicantInput {
   fullName: string;
   idCardNumber: string;
+  /** ISO `YYYY-MM-DD` date; this is what the API stores. */
+  dateOfBirth: string;
+  /**
+   * Derived from `dateOfBirth` for the local affordability assessment.
+   * The API recomputes it from the stored date of birth instead of trusting it.
+   */
   age: number;
   job: string;
   hasCDI: boolean;

@@ -11,6 +11,7 @@ import {
   formatCurrencyPrecise,
   formatDateTime,
   formatIdNumber,
+  formatIsoDate,
   formatPercent,
   initials,
 } from '../utils/format';
@@ -150,6 +151,10 @@ export function ApplicationDrawer({
               <div>
                 <span>Age</span>
                 <strong>{application.applicant.age} years</strong>
+              </div>
+              <div>
+                <span>Date of birth</span>
+                <strong>{formatIsoDate(application.applicant.dateOfBirth)}</strong>
               </div>
               <div>
                 <span>Occupation</span>

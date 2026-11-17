@@ -2,7 +2,7 @@
 
 import os
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -13,7 +13,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from pwdlib import PasswordHash
 from pwdlib.exceptions import UnknownHashError
 
@@ -58,14 +58,40 @@ def connect():
     )
 
 
+MIN_APPLICANT_AGE = 18
+MAX_APPLICANT_AGE = 120
+
+
+def age_from_date_of_birth(date_of_birth: date, today: date | None = None) -> int:
+    """Whole years between a birth date and today."""
+    reference = today or date.today()
+    years = reference.year - date_of_birth.year
+    if (reference.month, reference.day) < (date_of_birth.month, date_of_birth.day):
+        years -= 1
+    return years
+
+
 class ApplicantIn(BaseModel):
     fullName: str = Field(min_length=3, max_length=150)
     idCardNumber: str = Field(min_length=1, max_length=50)
-    age: int = Field(ge=18, le=120)
+    dateOfBirth: date
     job: str = Field(max_length=100)
     hasCDI: bool
     isMarried: bool
     numberOfChildren: int = Field(ge=0, le=20)
+
+    @field_validator("dateOfBirth")
+    @classmethod
+    def validate_date_of_birth(cls, value: date) -> date:
+        if value > date.today():
+            raise ValueError("Date of birth cannot be in the future.")
+        age = age_from_date_of_birth(value)
+        if age < MIN_APPLICANT_AGE or age > MAX_APPLICANT_AGE:
+            raise ValueError(
+                f"Applicants must be between {MIN_APPLICANT_AGE} and "
+                f"{MAX_APPLICANT_AGE} years old."
+            )
+        return value
 
 
 class DocumentIn(BaseModel):
@@ -154,7 +180,7 @@ JOINED_SELECT = """SELECT a.application_id, a.applicant_id, a.monthly_income,
  a.total_debt, a.savings, a.income_verified, a.income_document_name,
  a.income_document_type, a.income_document_size, a.income_document_uploaded_at,
  a.income_document_data_url, a.loan_amount, a.loan_duration, a.loan_purpose,
- a.missed_payments, a.created_at, p.full_name, p.id_card_number, p.age, p.job,
+ a.missed_payments, a.created_at, p.full_name, p.id_card_number, p.date_of_birth, p.job,
  p.has_cdi, p.is_married, p.number_of_children, d.decision_id,
  d.status AS decision_status, d.reason AS decision_reason, d.decision_date,
  m.name AS manager_name
@@ -199,7 +225,10 @@ def serialize(row: dict) -> dict:
             "applicantId": f"APL-{row['applicant_id']:06d}",
             "fullName": row["full_name"],
             "idCardNumber": row["id_card_number"],
-            "age": row["age"],
+            "dateOfBirth": row["date_of_birth"].isoformat(),
+            # Derived from the stored date of birth so the manager view and the
+            # 70-year approval policy keep working without an age column.
+            "age": age_from_date_of_birth(row["date_of_birth"]),
             "job": row["job"] or "",
             "hasCDI": bool(row["has_cdi"]),
             "isMarried": bool(row["is_married"]),
@@ -360,17 +389,17 @@ def create_application(payload: ApplicationIn):
         if existing_applicant:
             applicant_id = existing_applicant["applicant_id"]
             cursor.execute(
-                """UPDATE applicants SET full_name=%s, age=%s, job=%s, has_cdi=%s,
+                """UPDATE applicants SET full_name=%s, date_of_birth=%s, job=%s, has_cdi=%s,
                    is_married=%s, number_of_children=%s WHERE applicant_id=%s""",
-                (a.fullName, a.age, a.job, a.hasCDI, a.isMarried,
+                (a.fullName, a.dateOfBirth, a.job, a.hasCDI, a.isMarried,
                  a.numberOfChildren, applicant_id),
             )
         else:
             cursor.execute(
                 """INSERT INTO applicants
-                (full_name, id_card_number, age, job, has_cdi, is_married, number_of_children)
+                (full_name, id_card_number, date_of_birth, job, has_cdi, is_married, number_of_children)
                 VALUES (%s,%s,%s,%s,%s,%s,%s)""",
-                (a.fullName, normalized_id, a.age, a.job, a.hasCDI,
+                (a.fullName, normalized_id, a.dateOfBirth, a.job, a.hasCDI,
                  a.isMarried, a.numberOfChildren),
             )
             applicant_id = cursor.lastrowid

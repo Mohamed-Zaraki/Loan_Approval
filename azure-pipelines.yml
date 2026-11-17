@@ -41,6 +41,16 @@ variables:
     value: 22.x
   - name: pythonVersion
     value: 3.13
+  # Compile-time switch for the deployment stages.
+  #
+  # The ARM service connection, the registry and the Web App are created in
+  # Task #52. Until they exist, Azure DevOps rejects the whole run at queue
+  # time ("service connection ... could not be found") even though those
+  # stages would be skipped at runtime. While this is 'false' the pipeline only
+  # validates the code; flip it to 'true' in the pull request that lands the
+  # service connection.
+  - name: azureEnabled
+    value: false
 
 stages:
   # -------------------------------------------------------------------------
@@ -81,59 +91,61 @@ stages:
 
   # -------------------------------------------------------------------------
   # 2. Build and push - main only, after validation passes.
+  #    Only compiled into the pipeline once azureEnabled is 'true'.
   # -------------------------------------------------------------------------
-  - stage: BuildAndPush
-    displayName: Build and push the image
-    dependsOn: Validate
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    jobs:
-      - job: Image
-        displayName: Docker build and push to ACR
-        steps:
-          - task: AzureCLI@2
-            displayName: Build and push
-            inputs:
-              azureSubscription: $(AZURE_SERVICE_CONNECTION)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
+  - ${{ if eq(variables['azureEnabled'], 'true') }}:
+    - stage: BuildAndPush
+      displayName: Build and push the image
+      dependsOn: Validate
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      jobs:
+        - job: Image
+          displayName: Docker build and push to ACR
+          steps:
+            - task: AzureCLI@2
+              displayName: Build and push
+              inputs:
+                azureSubscription: $(AZURE_SERVICE_CONNECTION)
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  set -euo pipefail
+                  az acr login --name "$(ACR_NAME)"
+
+                  primary="$(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)"
+                  latest="$(ACR_LOGIN_SERVER)/$(imageRepository):latest"
+
+                  docker build --file "$(dockerfilePath)" --tag "$primary" "$(Build.SourcesDirectory)"
+                  docker tag "$primary" "$latest"
+                  docker push "$primary"
+                  docker push "$latest"
+
+                  echo "Pushed $primary"
+
+    # -----------------------------------------------------------------------
+    # 3. Deploy - updates the Web App to the image that was just pushed.
+    # -----------------------------------------------------------------------
+    - stage: Deploy
+      displayName: Deploy to App Service
+      dependsOn: BuildAndPush
+      condition: succeeded()
+      jobs:
+        - job: WebApp
+          displayName: Update the Web App container
+          steps:
+            - task: AzureWebAppContainer@1
+              displayName: Deploy $(imageRepository):$(imageTag)
+              inputs:
+                azureSubscription: $(AZURE_SERVICE_CONNECTION)
+                appName: $(WEBAPP_NAME)
+                resourceGroupName: $(RESOURCE_GROUP)
+                containers: $(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)
+
+            - script: |
                 set -euo pipefail
-                az acr login --name "$(ACR_NAME)"
-
-                primary="$(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)"
-                latest="$(ACR_LOGIN_SERVER)/$(imageRepository):latest"
-
-                docker build --file "$(dockerfilePath)" --tag "$primary" "$(Build.SourcesDirectory)"
-                docker tag "$primary" "$latest"
-                docker push "$primary"
-                docker push "$latest"
-
-                echo "Pushed $primary"
-
-  # -------------------------------------------------------------------------
-  # 3. Deploy - updates the Web App to the image that was just pushed.
-  # -------------------------------------------------------------------------
-  - stage: Deploy
-    displayName: Deploy to App Service
-    dependsOn: BuildAndPush
-    condition: succeeded()
-    jobs:
-      - job: WebApp
-        displayName: Update the Web App container
-        steps:
-          - task: AzureWebAppContainer@1
-            displayName: Deploy $(imageRepository):$(imageTag)
-            inputs:
-              azureSubscription: $(AZURE_SERVICE_CONNECTION)
-              appName: $(WEBAPP_NAME)
-              resourceGroupName: $(RESOURCE_GROUP)
-              containers: $(ACR_LOGIN_SERVER)/$(imageRepository):$(imageTag)
-
-          - script: |
-              set -euo pipefail
-              url="https://$(WEBAPP_NAME).azurewebsites.net/api/health"
-              echo "Waiting for $url"
-              curl --fail --silent --show-error \
-                   --retry 15 --retry-delay 10 --retry-all-errors \
-                   "$url"
-            displayName: Smoke test the health endpoint
+                url="https://$(WEBAPP_NAME).azurewebsites.net/api/health"
+                echo "Waiting for $url"
+                curl --fail --silent --show-error \
+                     --retry 15 --retry-delay 10 --retry-all-errors \
+                     "$url"
+              displayName: Smoke test the health endpoint

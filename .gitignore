@@ -1,15 +1,35 @@
+# --- dependencies and build output ---------------------------------------
 node_modules
 .venv/
+venv/
 __pycache__/
+*.pyc
 dist
 dist-ssr
+*.log
+
+# --- secrets and local configuration -------------------------------------
+# Real credentials never belong in the repository; only the *.example files.
 .env
-.env.local
-.env.*.local
+backend/.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+.azure/
+
+# --- local database snapshots and backups --------------------------------
+*.sql.bak
+*_backup.sql
+*.dump
+
+# --- editor and OS noise -------------------------------------------------
 *.local
 .DS_Store
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea
-*.log
